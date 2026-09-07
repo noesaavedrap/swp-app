@@ -50,13 +50,15 @@ export default function Allies() {
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white to-transparent" />
           <motion.div
-            className="flex w-max gap-4 motion-reduce:transform-none"
-            animate={reducedMotion ? undefined : { x: [0, -744] }}
-            transition={reducedMotion ? undefined : { duration: 24, ease: "linear", repeat: Infinity }}
+            className="flex w-max gap-4 will-change-transform motion-reduce:transform-none"
+            animate={reducedMotion ? undefined : { x: [0, -960] }}
+            transition={reducedMotion ? undefined : { duration: 26, ease: "linear", repeat: Infinity }}
           >
             {items.map((ally, index) => (
-              <div
+              <motion.div
                 key={`${ally.name}-${index}`}
+                whileHover={reducedMotion ? undefined : { y: -6, scale: 1.02 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
                 className="group flex h-28 w-56 flex-col justify-between rounded-2xl border border-border bg-background p-5 transition-colors hover:border-brand-200 hover:bg-brand-50"
               >
                 <div className="flex items-center justify-between">
@@ -71,7 +73,7 @@ export default function Allies() {
                   <p className="text-sm font-medium text-text-primary">{ally.name}</p>
                   <p className="mt-1 text-[11px] font-light text-text-tertiary">{ally.category}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         </div>
