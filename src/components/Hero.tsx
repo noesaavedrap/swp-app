@@ -77,10 +77,10 @@ export default function Hero() {
                 Acepta pagos con:
               </span>
               {[
-                { src: "/payments/yape.webp", alt: "Yape" },
-                { src: "/payments/plin.webp", alt: "Plin" },
-                { src: "/payments/visa.webp", alt: "Visa" },
-                { src: "/payments/pagoefectivo.webp", alt: "PagoEfectivo" },
+                { src: "/payments/yape.svg", alt: "Yape" },
+                { src: "/payments/plin.svg", alt: "Plin" },
+                { src: "/payments/visa.svg", alt: "Visa" },
+                { src: "/payments/pagoefectivo.svg", alt: "PagoEfectivo" },
               ].map((logo) => (
                 <img
                   key={logo.alt}
@@ -95,7 +95,7 @@ export default function Hero() {
           {/* Right mockup column */}
           <div className="flex-1 animate-in fade-in delay-500 duration-1000 fill-mode-both flex justify-center">
             <img
-              src="/images/hero-img.webp"
+              src="/images/hero-dashboard.svg"
               alt="Panel de control de SWP"
               className="h-auto w-full max-w-[560px]"
               loading="lazy"
