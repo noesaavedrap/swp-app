@@ -5,10 +5,10 @@ import { Menu, Zap, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const navLinks = [
-  { label: "Producto", href: "#producto" },
-  { label: "Precios", href: "#precios" },
-  { label: "Clientes", href: "#clientes" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Producto", href: "/producto" },
+  { label: "Precios", href: "/precios" },
+  { label: "Clientes", href: "/clientes" },
+  { label: "FAQ", href: "/faq" },
   { label: "Socios", href: "/socios" },
   { label: "Admin", href: "/admin" },
 ]

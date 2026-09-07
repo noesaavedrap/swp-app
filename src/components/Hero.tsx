@@ -86,7 +86,7 @@ export default function Hero() {
                   key={logo.alt}
                   src={logo.src}
                   alt={logo.alt}
-                  className="h-7 w-auto opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+                  className="h-8 w-auto opacity-85 transition-opacity duration-300 hover:opacity-100"
                 />
               ))}
             </div>

@@ -19,7 +19,7 @@ const features = [
     span: "col-span-12 lg:col-span-5",
     chips: [
       { label: "Tarjetas", icon: <CreditCard className="size-4" /> },
-      { label: "Yape/Plin", icon: <img src="/payments/yape.svg" alt="Yape" className="size-4 rounded-sm" /> },
+      { label: "Yape/Plin", icon: <img src="/payments/yape.svg" alt="Yape" className="h-5 w-6 object-contain" /> },
       { label: "Transferencias", icon: <Send className="size-4" /> },
       { label: "Pagos internacionales", icon: <Globe className="size-4" /> },
     ],
