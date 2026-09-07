@@ -21,7 +21,7 @@ const allies = [
   {
     name: "Aliclick",
     category: "Comercio digital",
-    logo: "/allies/pinterest/aliclick.jpg",
+    logo: "/allies/pinterest/logo.svg",
   },
 ];
 
