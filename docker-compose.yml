@@ -7,10 +7,11 @@ services:
         NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
     ports:
-      - "3000:3000"
+      - "${PORT:-3000}:${PORT:-3000}"
     env_file:
       - path: .env.local
         required: false
     environment:
+      PORT: ${PORT:-3000}
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
     restart: unless-stopped

@@ -25,7 +25,6 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
 RUN addgroup --system --gid 1001 nodejs \
@@ -36,5 +35,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
-EXPOSE 3000
-CMD ["node", "server.js"]
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:' + (process.env.PORT || process.env.APPLICATION_PORT || 8080)).then(response => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+CMD ["sh", "-c", "export PORT=\"${PORT:-${APPLICATION_PORT:-8080}}\"; exec node server.js"]
