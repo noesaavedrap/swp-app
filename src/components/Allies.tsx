@@ -6,22 +6,22 @@ const allies = [
   {
     name: "ENTEL S.A.",
     category: "Conectividad empresarial",
-    logo: "/allies/entel.svg",
+    logo: "/allies/pinterest/entel.jpg",
   },
   {
     name: "On Solutions",
     category: "Tecnología y soluciones",
-    logo: "/allies/on-solutions.svg",
+    logo: "/allies/pinterest/on-solutions.jpg",
   },
   {
     name: "DHL",
     category: "Logística regional",
-    logo: "/allies/dhl.svg",
+    logo: "/allies/pinterest/dhl.jpg",
   },
   {
     name: "Aliclick",
     category: "Comercio digital",
-    logo: "/allies/aliclick.svg",
+    logo: "/allies/pinterest/aliclick.jpg",
   },
 ];
 
