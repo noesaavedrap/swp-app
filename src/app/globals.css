@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  /* Brand Colors - SWP Emerald (replacing Finorio purple) */
+  --color-brand: #10b981;
+  --color-brand-light: #34d399;
+  --color-brand-dark: #059669;
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+
+  /* Semantic Colors */
+  --color-background: #ffffff;
+  --color-foreground: #181b25;
+  --color-card: #ffffff;
+  --color-card-foreground: #181b25;
+  --color-primary: #10b981;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f2f4f7;
+  --color-secondary-foreground: #181b25;
+  --color-muted: #f2f4f7;
+  --color-muted-foreground: #545454;
+  --color-accent: #f2f4f7;
+  --color-accent-foreground: #181b25;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #e5e7eb;
+  --color-input: #e5e7eb;
+  --color-ring: #10b981;
+
+  /* Custom tokens */
+  --color-text-primary: #181b25;
+  --color-text-secondary: #545454;
+  --color-text-tertiary: #a6a6a6;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+
+  /* Container */
+  --spacing-container: 76rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-lg: 0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03);
+  --shadow-card: 0px 2px 15px -3px rgba(16, 24, 40, 0.07), 0 10px 20px -2px rgba(16, 24, 40, 0.04);
+
+  /* Animations */
+  --animate-appear: appear 0.6s forwards ease-out;
+  --animate-fade-in: fadeIn 0.5s forwards ease-out;
+
+  @keyframes appear {
+    0% { opacity: 0; transform: translateY(1rem); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Inicia sesión | SWP Finance</title>
+  <link rel="stylesheet" href="https://cdn.auth0.com/js/lock/11.34.0/themes/default.min.css">
+  <style>
+    :root {
+      --brand: #10b981;
+      --brand-strong: #059669;
+      --ink: #181b25;
+      --muted: #545454;
+      --line: #e5e7eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(180deg, #d1fae5 0%, #ffffff 100%);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .auth0-lock.auth0-lock .auth0-lock-widget {
+      border-radius: 18px;
+      box-shadow: 0 20px 45px -20px rgba(16, 24, 40, 0.25);
+    }
+
+    .auth0-lock .auth0-lock-header {
+      background: #ffffff !important;
+    }
+
+    .auth0-lock .auth0-lock-header-logo {
+      border-radius: 14px;
+      box-shadow: 0 8px 20px -8px rgba(5, 150, 105, 0.45);
+    }
+
+    .auth0-lock .auth0-lock-name {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .auth0-lock .auth0-lock-submit {
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    .auth0-lock .auth0-lock-input-wrap .auth0-lock-input {
+      border-radius: 10px;
+    }
+
+    .brand-wrap {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .brand-tagline {
+      font-size: 15px;
+      color: var(--muted);
+      margin: 6px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="brand-wrap">
+    <p class="brand-tagline">Tu espacio financiero seguro</p>
+  </div>
+
+  <div id="auth0-lock-container-1" class="auth0-lock-container"></div>
+
+  <script src="https://cdn.auth0.com/js/lock/11.34.0/lock.min.js"></script>
+  <script>
+    var config = JSON.parse(decodeURIComponent(escape(window.atob('@@config@@'))));
+
+    var lock = new Auth0Lock(config.clientID, config.auth0Domain, {
+      auth: {
+        redirectUrl: config.callbackURL,
+        responseType: 'code',
+        params: { scope: 'openid profile email' }
+      },
+      theme: {
+        logo: 'http://localhost:3001/auth0-logo.svg',
+        primaryColor: '#10b981',
+        icon: 'http://localhost:3001/auth0-logo.svg',
+        labeledSubmitButtonText: 'Ingresar'
+      },
+      language: 'es',
+      languageDictionary: {
+        title: 'SWP Finance',
+        emailInputPlaceholder: 'tu@correo.com',
+        passwordInputPlaceholder: 'Tu contraseña',
+        loginSubmitLabel: 'Ingresar',
+        signUpSubmitLabel: 'Crear cuenta',
+        forgotPasswordAction: '¿Olvidaste tu contraseña?',
+        signUpTitle: 'Crea tu cuenta SWP',
+        signUpTerms: 'Al continuar aceptas los Términos y la Política de Privacidad de SWP.',
+        formButtonTitle: 'Enviar'
+      },
+      allowSignUp: true,
+      allowForgotPassword: true,
+      allowShowPassword: true,
+      loginAfterSignUp: true
+    });
+
+    lock.show();
+  </script>
+</body>
+</html>
