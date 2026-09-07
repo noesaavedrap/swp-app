@@ -19,6 +19,16 @@ interface StatsData {
   transaccionesPendientes: number;
 }
 
+interface SocioActivoRow {
+  activo: boolean | null;
+}
+
+interface TxStatsRow {
+  tipo: string;
+  monto: number | string;
+  estado: string;
+}
+
 export default function AdminStatsSection() {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,14 +48,15 @@ export default function AdminStatsSection() {
       supabase.from("transacciones").select("tipo,monto,estado"),
     ]);
 
-    const sociosActivos = socios?.filter((s) => s.activo).length ?? 0;
-    const allTx = transacciones ?? [];
+    const sociosRows = (socios ?? []) as SocioActivoRow[];
+    const allTx = (transacciones ?? []) as TxStatsRow[];
+    const sociosActivos = sociosRows.filter((s) => s.activo).length;
     const totalIngresos = allTx
       .filter((t) => t.tipo === "ingreso" && t.estado === "completado")
-      .reduce((acc, t) => acc + Number(t.monto), 0);
+      .reduce((acc: number, t) => acc + Number(t.monto), 0);
     const totalEgresos = allTx
       .filter((t) => t.tipo === "egreso" && t.estado === "completado")
-      .reduce((acc, t) => acc + Number(t.monto), 0);
+      .reduce((acc: number, t) => acc + Number(t.monto), 0);
     const transaccionesPendientes = allTx.filter(
       (t) => t.estado === "pendiente"
     ).length;

@@ -35,20 +35,27 @@ export default function AdminTransaccionesTable() {
       return;
     }
 
-    const socioIds = [...new Set(txData.map((t) => t.socio_id))];
+    const rows = txData as Transaccion[];
+    const socioIds = [...new Set(rows.map((t) => t.socio_id))];
     const { data: sociosData } = await supabase
       .from("socios")
       .select("id,nombres,apellidos")
       .in("id", socioIds);
 
+    const socioRows = (sociosData ?? []) as Array<{
+      id: string;
+      nombres: string | null;
+      apellidos: string | null;
+    }>;
+
     const socioMap = new Map(
-      (sociosData ?? []).map((s) => [
+      socioRows.map((s) => [
         s.id,
         `${s.nombres || ""} ${s.apellidos || ""}`.trim() || "Desconocido",
       ])
     );
 
-    const enriched = txData.map((t) => ({
+    const enriched = rows.map((t) => ({
       ...t,
       socio_nombre: socioMap.get(t.socio_id) ?? "Desconocido",
     }));
