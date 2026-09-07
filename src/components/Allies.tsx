@@ -9,9 +9,9 @@ const allies = [
     logo: "/allies/pinterest/entel.jpg",
   },
   {
-    name: "On Solutions",
+    name: "ON Empresas",
     category: "Tecnología y soluciones",
-    logo: "/allies/pinterest/on-solutions.jpg",
+    logo: "/allies/pinterest/on-empresas.svg",
   },
   {
     name: "DHL",
