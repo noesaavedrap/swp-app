@@ -7,6 +7,8 @@ import AdminSociosTable from "@/components/admin/AdminSociosTable";
 import AdminTransaccionesTable from "@/components/admin/AdminTransaccionesTable";
 
 export default async function AdminPage() {
+  if (!auth0) redirect("/");
+
   const session = await auth0.getSession();
   if (!session?.user) redirect("/auth/login");
 
