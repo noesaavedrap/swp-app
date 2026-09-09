@@ -22,9 +22,9 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
     setInfo(null);
     setLoading(true);
 
-    const supabase = getSupabase();
-
     try {
+      const supabase = getSupabase();
+
       if (mode === "signup") {
         if (!nombres.trim()) {
           setError("Ingresa tus nombres para registrarte.");
@@ -52,7 +52,11 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
         router.refresh();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al autenticar.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No pudimos completar el registro. Intenta nuevamente.",
+      );
     } finally {
       setLoading(false);
     }
