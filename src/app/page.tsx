@@ -1,6 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
+import IntegrationStrip from "@/components/IntegrationStrip";
+import OperationsPanel from "@/components/OperationsPanel";
 import Allies from "@/components/Allies";
 import Features from "@/components/Features";
 import Showcase from "@/components/Showcase";
@@ -16,6 +18,8 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Stats />
+      <IntegrationStrip />
+      <OperationsPanel />
       <Allies />
       <Features />
       <Showcase />
