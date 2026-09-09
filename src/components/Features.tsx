@@ -15,15 +15,22 @@ import {
 } from "lucide-react";
 
 const features = [
-  { icon: CreditCard, title: "SWP Pay", description: "Convierte cada pago en una experiencia rápida y confiable.", span: "lg:col-span-5", tone: "from-emerald-50 via-white to-cyan-50", chips: ["Tarjetas", "Yape y Plin", "Transferencias"], visual: "payments" },
-  { icon: Store, title: "SWP Store", description: "Un storefront conectado a inventario, checkout y redes.", span: "lg:col-span-7", tone: "from-sky-50 via-white to-emerald-50", chips: ["Tienda online", "Inventario", "Checkout"], visual: "store" },
-  { icon: BarChart3, title: "SWP Business", description: "Indicadores accionables para que tu operación avance con datos.", span: "lg:col-span-7", tone: "from-lime-50 via-white to-emerald-50", chips: ["Analytics", "Facturación", "API"], visual: "analytics" },
-  { icon: Wallet, title: "SWP Wallet", description: "Liquidez y movimientos bajo control, en una sola vista.", span: "lg:col-span-5", tone: "from-teal-50 via-white to-sky-50", chips: ["Balances", "Multi-moneda", "Retiros"], visual: "wallet" },
+  { icon: CreditCard, title: "SWP Pay", category: "Pagos", description: "Convierte cada pago en una experiencia rápida y confiable.", span: "lg:col-span-5", tone: "from-emerald-50 via-white to-cyan-50", chips: ["Tarjetas", "Yape y Plin", "Transferencias"], visual: "payments" },
+  { icon: Store, title: "SWP Store", category: "Comercio", description: "Un storefront conectado a inventario, checkout y redes.", span: "lg:col-span-7", tone: "from-sky-50 via-white to-emerald-50", chips: ["Tienda online", "Inventario", "Checkout"], visual: "store" },
+  { icon: BarChart3, title: "SWP Business", category: "Operación", description: "Indicadores accionables para que tu operación avance con datos.", span: "lg:col-span-7", tone: "from-lime-50 via-white to-emerald-50", chips: ["Analytics", "Facturación", "API"], visual: "analytics" },
+  { icon: Wallet, title: "SWP Wallet", category: "Finanzas", description: "Liquidez y movimientos bajo control, en una sola vista.", span: "lg:col-span-5", tone: "from-teal-50 via-white to-sky-50", chips: ["Balances", "Multi-moneda", "Retiros"], visual: "wallet" },
 ] as const;
+
+const categories = ["Todos", "Pagos", "Comercio", "Operación", "Finanzas"] as const;
 
 type Feature = (typeof features)[number];
 
 export default function Features() {
+  const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>("Todos");
+  const visibleFeatures = activeCategory === "Todos"
+    ? features
+    : features.filter((feature) => feature.category === activeCategory);
+
   return (
     <section className="relative overflow-hidden py-12 md:py-20 lg:py-28">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:52px_52px] opacity-35 [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_75%,transparent)]" />
@@ -33,8 +40,25 @@ export default function Features() {
           <h2 className="text-[32px] font-light leading-tight tracking-tight text-text-primary lg:text-[46px]">Todo lo que necesitas, en <span className="text-brand">una plataforma</span></h2>
           <p className="max-w-[560px] text-md font-light leading-relaxed text-text-secondary">Cuatro productos poderosos para impulsar tu negocio desde el primer cobro hasta la siguiente etapa.</p>
         </div>
-        <div className="mt-12 grid grid-cols-1 gap-4 lg:grid-cols-12">
-          {features.map((feature, index) => <FeatureCard key={feature.title} feature={feature} index={index} />)}
+        <div className="mx-auto mt-9 flex w-fit max-w-full overflow-x-auto rounded-xl border border-border bg-white/80 p-1 shadow-sm backdrop-blur-sm" role="tablist" aria-label="Filtrar productos">
+          {categories.map((category) => {
+            const active = category === activeCategory;
+            return (
+              <button
+                key={category}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setActiveCategory(category)}
+                className={`whitespace-nowrap rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-200 md:px-4 ${active ? "bg-foreground text-white shadow-sm" : "text-text-secondary hover:bg-secondary hover:text-text-primary"}`}
+              >
+                {category}
+              </button>
+            );
+          })}
+        </div>
+        <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-12">
+          {visibleFeatures.map((feature, index) => <FeatureCard key={feature.title} feature={feature} index={index} />)}
         </div>
       </div>
     </section>
