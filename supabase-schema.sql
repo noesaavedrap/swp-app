@@ -43,11 +43,21 @@ create index if not exists idx_transacciones_estado on public.transacciones(esta
 alter table public.socios enable row level security;
 alter table public.transacciones enable row level security;
 
+create or replace function public.current_user_role()
+returns text
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select rol from public.socios where id = auth.uid() limit 1;
+$$;
+
 -- Socios: un socio ve solo su propio perfil; los admins ven todos
 drop policy if exists "socios_select_own" on public.socios;
 create policy "socios_select_own" on public.socios
   for select using (
-    (select rol from public.socios where id = auth.uid()) = 'admin'
+    public.current_user_role() = 'admin'
     or id = auth.uid()
   );
 
@@ -59,7 +69,7 @@ create policy "socios_update_own" on public.socios
 drop policy if exists "transacciones_select" on public.transacciones;
 create policy "transacciones_select" on public.transacciones
   for select using (
-    (select rol from public.socios where id = auth.uid()) = 'admin'
+    public.current_user_role() = 'admin'
     or socio_id = auth.uid()
   );
 
@@ -83,8 +93,8 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.socios (id)
-  values (new.id)
+  insert into public.socios (id, nombres)
+  values (new.id, coalesce(new.raw_user_meta_data ->> 'nombres', ''))
   on conflict (id) do nothing;
   return new;
 end;
