@@ -17,6 +17,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [user, setUser] = useState<string | null>(null)
+  const [profileLoading, setProfileLoading] = useState(true)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -25,12 +26,18 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    fetch("/auth/profile")
+    const controller = new AbortController()
+
+    fetch("/auth/profile", { signal: controller.signal })
       .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.user?.email) setUser(data.user.email)
+      .then((data) => setUser(data?.user?.email ?? null))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return
+        setUser(null)
       })
-      .catch(() => setUser(null))
+      .finally(() => setProfileLoading(false))
+
+    return () => controller.abort()
   }, [])
 
   return (
@@ -69,7 +76,9 @@ export default function Navbar() {
 
           {/* Right CTAs */}
           <div className="hidden lg:inline-flex items-center gap-4">
-            {user ? (
+            {profileLoading ? (
+              <div className="h-9 w-28 animate-pulse rounded-lg bg-secondary" aria-label="Cargando sesión" />
+            ) : user ? (
               <>
                 <span className="text-sm font-light text-text-secondary max-w-[12rem] truncate">
                   {user}
@@ -99,6 +108,8 @@ export default function Navbar() {
             size="icon"
             className="lg:hidden"
             onClick={() => setMobileOpen((o) => !o)}
+            aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
