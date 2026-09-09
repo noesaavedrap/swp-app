@@ -32,7 +32,7 @@ export default function Features() {
     : features.filter((feature) => feature.category === activeCategory);
 
   return (
-    <section className="relative overflow-hidden py-12 md:py-20 lg:py-28">
+    <section id="features" className="relative scroll-mt-28 overflow-hidden py-12 md:py-20 lg:py-28">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:52px_52px] opacity-35 [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_75%,transparent)]" />
       <div className="mx-auto max-w-[76rem] px-4 xl:px-0">
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">

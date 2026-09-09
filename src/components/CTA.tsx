@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function CTA() {
@@ -16,12 +17,14 @@ export default function CTA() {
             Únete a miles de empresas que ya crecen con nuestra plataforma.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Button variant="dark" size="lg">
+            <Button variant="dark" size="lg" asChild>
+              <Link href="/socios/registro">
               Solicitar acceso
               <ArrowRight className="ml-2 size-4" />
+              </Link>
             </Button>
-            <Button variant="secondary" size="lg">
-              Hablar con ventas
+            <Button variant="secondary" size="lg" asChild>
+              <a href="mailto:ventas@swp.finance">Hablar con ventas</a>
             </Button>
           </div>
         </div>
