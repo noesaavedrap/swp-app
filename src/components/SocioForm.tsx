@@ -11,10 +11,67 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [tipoDocumento, setTipoDocumento] = useState<"dni" | "ruc">("dni");
+  const [documento, setDocumento] = useState("");
   const [nombres, setNombres] = useState("");
+  const [apellidos, setApellidos] = useState("");
   const [loading, setLoading] = useState(false);
+  const [validatingDocumento, setValidatingDocumento] = useState(false);
+  const [documentoValidado, setDocumentoValidado] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+
+  const validarDocumento = async () => {
+    const numero = documento.trim();
+    if (!numero) {
+      setError("Ingresa un DNI o RUC para validarlo.");
+      return;
+    }
+
+    setError(null);
+    setInfo(null);
+    setValidatingDocumento(true);
+
+    try {
+      const response = await fetch("/api/consulta-documento", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tipo: tipoDocumento, numero }),
+      });
+
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) {
+        throw new Error(payload.error || "No se pudo validar el documento.");
+      }
+
+      const nextNombres = String(payload.nombres || "").trim();
+      const nextApellidos = String(payload.apellidos || "").trim();
+
+      if (!nextNombres) {
+        throw new Error("La consulta devolvió datos incompletos.");
+      }
+
+      setNombres(nextNombres);
+      setApellidos(nextApellidos);
+      setDocumentoValidado(true);
+      setInfo(
+        tipoDocumento === "dni"
+          ? "DNI validado correctamente. Se completaron tus datos de registro."
+          : "RUC validado correctamente. Se completaron los datos de la empresa."
+      );
+    } catch (err) {
+      setDocumentoValidado(false);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "No pudimos validar el documento. Intenta nuevamente."
+      );
+    } finally {
+      setValidatingDocumento(false);
+    }
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,19 +83,60 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
       const supabase = getSupabase();
 
       if (mode === "signup") {
-        if (!nombres.trim()) {
-          setError("Ingresa tus nombres para registrarte.");
+        if (!documento.trim()) {
+          setError("Ingresa tu DNI o RUC para continuar.");
           setLoading(false);
           return;
         }
-        const { error: signUpError } = await supabase.auth.signUp({
+
+        if (!documentoValidado) {
+          setError("Debes validar tu documento antes de crear la cuenta.");
+          setLoading(false);
+          return;
+        }
+
+        const trimmedNombres = nombres.trim();
+        const trimmedApellidos = apellidos.trim();
+
+        if (!trimmedNombres) {
+          setError("Ingresa el nombre o razón social para registrarte.");
+          setLoading(false);
+          return;
+        }
+
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: { nombres },
+            data: {
+              nombres: trimmedNombres,
+              apellidos: trimmedApellidos,
+              documento,
+              tipo_documento: tipoDocumento,
+            },
           },
         });
+
         if (signUpError) throw signUpError;
+
+        const user = signUpData.user;
+        if (user) {
+          const { error: profileError } = await supabase
+            .from("socios")
+            .upsert(
+              {
+                id: user.id,
+                nombres: trimmedNombres,
+                apellidos: trimmedApellidos,
+                documento,
+                rol: "socio",
+              },
+              { onConflict: "id" },
+            );
+
+          if (profileError) throw profileError;
+        }
+
         setInfo(
           "Cuenta creada. Revisa tu correo para confirmar el registro, luego inicia sesión."
         );
@@ -82,18 +180,83 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
 
       <form onSubmit={submit} className="flex flex-col gap-4">
         {mode === "signup" && (
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
-              Nombres
-            </span>
-            <input
-              type="text"
-              value={nombres}
-              onChange={(e) => setNombres(e.target.value)}
-              className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
-              placeholder="ej. María López"
-            />
-          </label>
+          <>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
+                Tipo de documento
+              </span>
+              <select
+                value={tipoDocumento}
+                onChange={(e) => {
+                  const nextTipo = e.target.value as "dni" | "ruc";
+                  setTipoDocumento(nextTipo);
+                  setDocumentoValidado(false);
+                  setNombres("");
+                  setApellidos("");
+                  setDocumento("");
+                }}
+                className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
+              >
+                <option value="dni">DNI</option>
+                <option value="ruc">RUC</option>
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1.5">
+              <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
+                {tipoDocumento === "dni" ? "DNI" : "RUC"}
+              </span>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={documento}
+                  onChange={(e) => {
+                    setDocumento(e.target.value);
+                    setDocumentoValidado(false);
+                  }}
+                  className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
+                  placeholder={tipoDocumento === "dni" ? "Ingrese 8 dígitos" : "Ingrese 11 dígitos"}
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={validarDocumento}
+                  disabled={validatingDocumento}
+                >
+                  {validatingDocumento ? <Loader2 className="size-4 animate-spin" /> : "Validar"}
+                </Button>
+              </div>
+            </label>
+
+            <label className="flex flex-col gap-1.5">
+              <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
+                {tipoDocumento === "dni" ? "Nombres" : "Razón social"}
+              </span>
+              <input
+                type="text"
+                value={nombres}
+                onChange={(e) => setNombres(e.target.value)}
+                className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
+                placeholder={tipoDocumento === "dni" ? "ej. María López" : "ej. Empresa XYZ S.A.C."}
+              />
+            </label>
+
+            {tipoDocumento === "dni" && (
+              <label className="flex flex-col gap-1.5">
+                <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
+                  Apellidos
+                </span>
+                <input
+                  type="text"
+                  value={apellidos}
+                  onChange={(e) => setApellidos(e.target.value)}
+                  className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
+                  placeholder="ej. Torres García"
+                />
+              </label>
+            )}
+          </>
         )}
 
         <label className="flex flex-col gap-1.5">
