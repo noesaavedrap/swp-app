@@ -12,6 +12,15 @@ Plataforma de pagos y operación financiera para empresas que escalan en LATAM.
 - Soporte de métodos de pago peruanos (Yape, Plin, PagoEfectivo, etc.)
 - Panel de administración con Auth0
 - Realtime con Supabase
+- **Nueva sección KeywordsScroll** (animación de palabras clave: RESULTADOS, ENFOQUE, ACCIÓN...)
+
+## Preview de la animación KeywordsScroll
+
+Puedes ver la animación en vivo abriendo este archivo:
+
+**[preview/keywords-scroll.html](https://github.com/saavedranoe116-tech/swp-app/blob/main/preview/keywords-scroll.html)**
+
+O descarga el archivo y ábrelo directamente en el navegador (doble clic).
 
 ## Configuración local
 
