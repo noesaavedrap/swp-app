@@ -10,6 +10,7 @@ import {
   Loader2,
   Plus,
   Search,
+  TrendingUp,
   Zap,
 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
@@ -68,7 +69,6 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters
   const [filtroTipo, setFiltroTipo] = useState<string>("todos");
   const [filtroMetodo, setFiltroMetodo] = useState<string>("todos");
   const [busqueda, setBusqueda] = useState("");
@@ -111,7 +111,7 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
         },
         () => {
           loadTransacciones();
-          loadSocio(); // actualiza saldo en tiempo real
+          loadSocio();
         }
       )
       .on(
@@ -168,18 +168,15 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
     setContraparte("");
     setMetodo("efectivo");
     setTipo("ingreso");
-    // El trigger + realtime se encargan del resto
   };
 
-  // Cálculos del mes actual
   const now = new Date();
   const inicioMes = new Date(now.getFullYear(), now.getMonth(), 1);
 
   const transaccionesMes = useMemo(
     () =>
       transacciones.filter(
-        (t) =>
-          t.estado === "completado" && new Date(t.creado_en) >= inicioMes
+        (t) => t.estado === "completado" && new Date(t.creado_en) >= inicioMes
       ),
     [transacciones, inicioMes]
   );
@@ -192,7 +189,41 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
     .filter((t) => t.tipo === "egreso" || t.tipo === "transferencia")
     .reduce((acc, t) => acc + Number(t.monto), 0);
 
-  // Filtros aplicados
+  const neto = ingresos - egresos;
+
+  // Last 7 days activity for mini chart
+  const last7Days = useMemo(() => {
+    const days: { label: string; ingresos: number; egresos: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      const next = new Date(d);
+      next.setDate(next.getDate() + 1);
+
+      const dayTx = transacciones.filter((t) => {
+        const date = new Date(t.creado_en);
+        return t.estado === "completado" && date >= d && date < next;
+      });
+
+      days.push({
+        label: d.toLocaleDateString("es-PE", { weekday: "short" }).slice(0, 2),
+        ingresos: dayTx
+          .filter((t) => t.tipo === "ingreso")
+          .reduce((a, t) => a + Number(t.monto), 0),
+        egresos: dayTx
+          .filter((t) => t.tipo !== "ingreso")
+          .reduce((a, t) => a + Number(t.monto), 0),
+      });
+    }
+    return days;
+  }, [transacciones]);
+
+  const maxBar = Math.max(
+    ...last7Days.map((d) => Math.max(d.ingresos, d.egresos)),
+    1
+  );
+
   const transaccionesFiltradas = useMemo(() => {
     return transacciones.filter((t) => {
       if (filtroTipo !== "todos" && t.tipo !== filtroTipo) return false;
@@ -263,7 +294,7 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-brand to-brand-light">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-brand to-brand-light shadow-lg shadow-brand/20">
             <Zap className="size-5 text-white" strokeWidth={2.5} />
           </div>
           <div>
@@ -281,8 +312,8 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
         </Button>
       </div>
 
-      {/* Stats cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* Stats + Chart */}
+      <div className="grid gap-4 lg:grid-cols-4">
         <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
           <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
             Saldo disponible
@@ -290,8 +321,9 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
           <p className="mt-2 text-3xl font-semibold tracking-tight text-text-primary">
             {formatMoney(Number(socio.saldo))}
           </p>
-          <p className="mt-1 text-xs text-text-tertiary">Actualizado en tiempo real</p>
+          <p className="mt-1 text-xs text-text-tertiary">En tiempo real</p>
         </div>
+
         <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
           <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
             Ingresos del mes
@@ -301,6 +333,7 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
             {formatMoney(ingresos)}
           </p>
         </div>
+
         <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
           <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
             Egresos del mes
@@ -309,6 +342,63 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
             <ArrowUpRight className="size-5" />
             {formatMoney(egresos)}
           </p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+          <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
+            Neto del mes
+          </p>
+          <p
+            className={`mt-2 flex items-center gap-2 text-3xl font-semibold tracking-tight ${
+              neto >= 0 ? "text-brand" : "text-red-500"
+            }`}
+          >
+            <TrendingUp className="size-5" />
+            {formatMoney(neto)}
+          </p>
+        </div>
+      </div>
+
+      {/* Mini chart - last 7 days */}
+      <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+        <div className="mb-5 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wide">
+            Actividad últimos 7 días
+          </h3>
+          <div className="flex items-center gap-4 text-xs text-text-tertiary">
+            <span className="flex items-center gap-1.5">
+              <span className="size-2.5 rounded-full bg-brand" /> Ingresos
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-2.5 rounded-full bg-red-400" /> Egresos
+            </span>
+          </div>
+        </div>
+
+        <div className="flex h-36 items-end gap-2 md:gap-3">
+          {last7Days.map((day, i) => (
+            <div key={i} className="flex flex-1 flex-col items-center gap-1">
+              <div className="flex h-28 w-full items-end justify-center gap-0.5">
+                <div
+                  className="w-2.5 rounded-t-md bg-brand/80 transition-all duration-500 md:w-3"
+                  style={{
+                    height: `${Math.max(4, (day.ingresos / maxBar) * 100)}%`,
+                  }}
+                  title={`Ingresos: ${formatMoney(day.ingresos)}`}
+                />
+                <div
+                  className="w-2.5 rounded-t-md bg-red-400/80 transition-all duration-500 md:w-3"
+                  style={{
+                    height: `${Math.max(4, (day.egresos / maxBar) * 100)}%`,
+                  }}
+                  title={`Egresos: ${formatMoney(day.egresos)}`}
+                />
+              </div>
+              <span className="text-[10px] font-medium uppercase text-text-tertiary">
+                {day.label}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -367,7 +457,7 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
             ))}
           </select>
 
-          <div className="relative flex-1 min-w-[180px]">
+          <div className="relative min-w-[180px] flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-tertiary" />
             <input
               type="text"
@@ -481,9 +571,7 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
           </form>
         )}
 
-        {error && (
-          <p className="px-6 py-3 text-sm text-red-600">{error}</p>
-        )}
+        {error && <p className="px-6 py-3 text-sm text-red-600">{error}</p>}
 
         {/* Lista */}
         <div className="divide-y divide-border">
