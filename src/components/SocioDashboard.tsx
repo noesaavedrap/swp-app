@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import ActivityChart, { type DayData } from "@/components/charts/ActivityChart";
 
 interface Socio {
   id: string;
@@ -191,9 +192,9 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
 
   const neto = ingresos - egresos;
 
-  // Last 7 days activity for mini chart
-  const last7Days = useMemo(() => {
-    const days: { label: string; ingresos: number; egresos: number }[] = [];
+  // Last 7 days for D3 chart
+  const last7Days: DayData[] = useMemo(() => {
+    const days: DayData[] = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
@@ -208,6 +209,7 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
 
       days.push({
         label: d.toLocaleDateString("es-PE", { weekday: "short" }).slice(0, 2),
+        date: d,
         ingresos: dayTx
           .filter((t) => t.tipo === "ingreso")
           .reduce((a, t) => a + Number(t.monto), 0),
@@ -218,11 +220,6 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
     }
     return days;
   }, [transacciones]);
-
-  const maxBar = Math.max(
-    ...last7Days.map((d) => Math.max(d.ingresos, d.egresos)),
-    1
-  );
 
   const transaccionesFiltradas = useMemo(() => {
     return transacciones.filter((t) => {
@@ -312,7 +309,7 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
         </Button>
       </div>
 
-      {/* Stats + Chart */}
+      {/* Stats cards */}
       <div className="grid gap-4 lg:grid-cols-4">
         <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
           <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
@@ -359,9 +356,9 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
         </div>
       </div>
 
-      {/* Mini chart - last 7 days */}
+      {/* D3 Chart */}
       <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
-        <div className="mb-5 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wide">
             Actividad últimos 7 días
           </h3>
@@ -375,31 +372,7 @@ export default function SocioDashboard({ socio: initialSocio }: { socio: Socio }
           </div>
         </div>
 
-        <div className="flex h-36 items-end gap-2 md:gap-3">
-          {last7Days.map((day, i) => (
-            <div key={i} className="flex flex-1 flex-col items-center gap-1">
-              <div className="flex h-28 w-full items-end justify-center gap-0.5">
-                <div
-                  className="w-2.5 rounded-t-md bg-brand/80 transition-all duration-500 md:w-3"
-                  style={{
-                    height: `${Math.max(4, (day.ingresos / maxBar) * 100)}%`,
-                  }}
-                  title={`Ingresos: ${formatMoney(day.ingresos)}`}
-                />
-                <div
-                  className="w-2.5 rounded-t-md bg-red-400/80 transition-all duration-500 md:w-3"
-                  style={{
-                    height: `${Math.max(4, (day.egresos / maxBar) * 100)}%`,
-                  }}
-                  title={`Egresos: ${formatMoney(day.egresos)}`}
-                />
-              </div>
-              <span className="text-[10px] font-medium uppercase text-text-tertiary">
-                {day.label}
-              </span>
-            </div>
-          ))}
-        </div>
+        <ActivityChart data={last7Days} height={240} />
       </div>
 
       {/* Movimientos */}
