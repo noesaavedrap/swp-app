@@ -19,7 +19,6 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  // Format money for tooltips
   const formatMoney = useMemo(
     () =>
       new Intl.NumberFormat("es-PE", {
@@ -39,7 +38,6 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
 
-    // Clear previous
     d3.select(svgRef.current).selectAll("*").remove();
 
     const svg = d3
@@ -53,7 +51,6 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Scales
     const x0 = d3
       .scaleBand()
       .domain(data.map((d) => d.label))
@@ -74,7 +71,6 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
       .nice()
       .range([innerHeight, 0]);
 
-    // Color scale matching brand
     const color = d3
       .scaleOrdinal<string>()
       .domain(["ingresos", "egresos"])
@@ -90,9 +86,9 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
           .tickSize(-innerWidth)
           .tickFormat(() => "")
       )
-      .call((g) => g.select(".domain").remove())
-      .call((g) =>
-        g
+      .call((sel) => sel.select(".domain").remove())
+      .call((sel) =>
+        sel
           .selectAll(".tick line")
           .attr("stroke", "#e5e7eb")
           .attr("stroke-dasharray", "3,3")
@@ -111,30 +107,30 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
             return `S/${v}`;
           })
       )
-      .call((g) => g.select(".domain").attr("stroke", "#e5e7eb"))
-      .call((g) =>
-        g
+      .call((sel) => sel.select(".domain").attr("stroke", "#e5e7eb"))
+      .call((sel) =>
+        sel
           .selectAll(".tick text")
           .attr("fill", "#a6a6a6")
           .attr("font-size", "11px")
           .attr("font-family", "system-ui, sans-serif")
       )
-      .call((g) => g.selectAll(".tick line").attr("stroke", "#e5e7eb"));
+      .call((sel) => sel.selectAll(".tick line").attr("stroke", "#e5e7eb"));
 
     // X axis
     g.append("g")
       .attr("transform", `translate(0,${innerHeight})`)
       .call(d3.axisBottom(x0))
-      .call((g) => g.select(".domain").attr("stroke", "#e5e7eb"))
-      .call((g) =>
-        g
+      .call((sel) => sel.select(".domain").attr("stroke", "#e5e7eb"))
+      .call((sel) =>
+        sel
           .selectAll(".tick text")
           .attr("fill", "#545454")
           .attr("font-size", "11px")
           .attr("font-weight", "500")
           .attr("font-family", "system-ui, sans-serif")
       )
-      .call((g) => g.selectAll(".tick line").remove());
+      .call((sel) => sel.selectAll(".tick line").remove());
 
     // Bars group
     const dayGroups = g
@@ -144,25 +140,39 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
       .attr("class", "day")
       .attr("transform", (d) => `translate(${x0(d.label)},0)`);
 
-    // Tooltip
-    const tooltip = d3
-      .select(container)
-      .selectAll<"div", unknown>(".d3-tooltip")
-      .data([null])
-      .join("div")
-      .attr("class", "d3-tooltip")
-      .style("position", "absolute")
-      .style("pointer-events", "none")
-      .style("opacity", "0")
-      .style("background", "#181b25")
-      .style("color", "#fff")
-      .style("padding", "8px 12px")
-      .style("border-radius", "8px")
-      .style("font-size", "12px")
-      .style("line-height", "1.4")
-      .style("box-shadow", "0 8px 24px rgba(0,0,0,0.18)")
-      .style("z-index", "50")
-      .style("transition", "opacity 0.15s ease");
+    // Tooltip — create via DOM to avoid D3 selectAll generic issues
+    let tooltipEl = container.querySelector(".d3-tooltip") as HTMLDivElement | null;
+    if (!tooltipEl) {
+      tooltipEl = document.createElement("div");
+      tooltipEl.className = "d3-tooltip";
+      Object.assign(tooltipEl.style, {
+        position: "absolute",
+        pointerEvents: "none",
+        opacity: "0",
+        background: "#181b25",
+        color: "#fff",
+        padding: "8px 12px",
+        borderRadius: "8px",
+        fontSize: "12px",
+        lineHeight: "1.4",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
+        zIndex: "50",
+        transition: "opacity 0.15s ease",
+      });
+      container.appendChild(tooltipEl);
+    }
+
+    const showTooltip = (html: string, x: number, yPos: number) => {
+      if (!tooltipEl) return;
+      tooltipEl.innerHTML = html;
+      tooltipEl.style.opacity = "1";
+      tooltipEl.style.left = `${x + 12}px`;
+      tooltipEl.style.top = `${yPos - 10}px`;
+    };
+
+    const hideTooltip = () => {
+      if (tooltipEl) tooltipEl.style.opacity = "0";
+    };
 
     // Draw bars with animation
     dayGroups
@@ -182,25 +192,25 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
       .style("cursor", "pointer")
       .on("mouseenter", function (event, d) {
         d3.select(this).attr("opacity", 0.85);
-
         const [mx, my] = d3.pointer(event, container);
-        tooltip
-          .style("opacity", "1")
-          .html(
-            `<div style="font-weight:600;margin-bottom:4px">${d.full.label}</div>
-             <div style="color:#34d399">↑ Ingresos: ${formatMoney.format(d.full.ingresos)}</div>
-             <div style="color:#f87171">↓ Egresos: ${formatMoney.format(d.full.egresos)}</div>`
-          )
-          .style("left", `${mx + 12}px`)
-          .style("top", `${my - 10}px`);
+        showTooltip(
+          `<div style="font-weight:600;margin-bottom:4px">${d.full.label}</div>
+           <div style="color:#34d399">↑ Ingresos: ${formatMoney.format(d.full.ingresos)}</div>
+           <div style="color:#f87171">↓ Egresos: ${formatMoney.format(d.full.egresos)}</div>`,
+          mx,
+          my
+        );
       })
       .on("mousemove", function (event) {
         const [mx, my] = d3.pointer(event, container);
-        tooltip.style("left", `${mx + 12}px`).style("top", `${my - 10}px`);
+        if (tooltipEl) {
+          tooltipEl.style.left = `${mx + 12}px`;
+          tooltipEl.style.top = `${my - 10}px`;
+        }
       })
       .on("mouseleave", function () {
         d3.select(this).attr("opacity", 1);
-        tooltip.style("opacity", "0");
+        hideTooltip();
       })
       .transition()
       .duration(700)
@@ -209,22 +219,18 @@ export default function ActivityChart({ data, height = 220 }: ActivityChartProps
       .attr("y", (d) => y(d.value))
       .attr("height", (d) => innerHeight - y(d.value));
 
-    // Cleanup tooltip on unmount
     return () => {
-      d3.select(container).selectAll(".d3-tooltip").remove();
+      if (tooltipEl && tooltipEl.parentNode) {
+        tooltipEl.parentNode.removeChild(tooltipEl);
+      }
     };
   }, [data, height, formatMoney]);
 
-  // Resize observer for responsiveness
   useEffect(() => {
     if (!containerRef.current) return;
     const observer = new ResizeObserver(() => {
-      // Trigger re-render by forcing a tiny state change via data dependency
-      // The main effect already depends on container width via clientWidth
-      // We force a redraw by dispatching a resize event on the svg
       if (svgRef.current) {
-        const event = new Event("resize");
-        window.dispatchEvent(event);
+        window.dispatchEvent(new Event("resize"));
       }
     });
     observer.observe(containerRef.current);
