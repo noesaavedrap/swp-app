@@ -54,3 +54,7 @@ Esto crea:
 - Tailwind CSS 4
 - Framer Motion / Motion
 - **D3.js** (gráficos interactivos)
+
+---
+
+_Último rebuild: TypeScript fix para ActivityChart (D3)_
