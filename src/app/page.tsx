@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
+import KeywordsScroll from "@/components/KeywordsScroll";
 import Stats from "@/components/Stats";
 import IntegrationStrip from "@/components/IntegrationStrip";
 import OperationsPanel from "@/components/OperationsPanel";
@@ -17,6 +18,7 @@ export default function Home() {
     <main className="min-h-screen overflow-x-clip bg-background">
       <Navbar />
       <Hero />
+      <KeywordsScroll />
       <Stats />
       <IntegrationStrip />
       <OperationsPanel />
