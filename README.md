@@ -12,7 +12,8 @@ Plataforma de pagos y operación financiera para empresas que escalan en LATAM.
 - Soporte de métodos de pago peruanos (Yape, Plin, PagoEfectivo, etc.)
 - Panel de administración con Auth0
 - Realtime con Supabase
-- **Nueva sección KeywordsScroll** (animación de palabras clave: RESULTADOS, ENFOQUE, ACCIÓN...)
+- **Nueva sección KeywordsScroll** (animación de palabras clave)
+- **Gráficos con D3.js** (actividad de últimos 7 días con tooltips interactivos)
 
 ## Preview de la animación KeywordsScroll
 
@@ -28,6 +29,11 @@ O descarga el archivo y ábrelo directamente en el navegador (doble clic).
 2. Las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` también deben estar configuradas en el proveedor de despliegue.
 3. Después de actualizar variables de entorno, vuelve a desplegar la aplicación.
 
+```bash
+npm install   # incluye d3
+npm run dev
+```
+
 ## Preparar Supabase (importante)
 
 En el proyecto de Supabase abre **SQL Editor**, pega el contenido completo de `supabase-schema.sql` y ejecútalo una vez.
@@ -40,15 +46,6 @@ Esto crea:
 
 > Si ya tenías el schema anterior, ejecuta de nuevo el archivo completo (usa `create or replace` y `drop if exists`).
 
-## Scripts
-
-```bash
-npm install
-npm run dev      # desarrollo con Turbopack
-npm run build
-npm start
-```
-
 ## Stack
 
 - Next.js 16 + React 19
@@ -56,3 +53,4 @@ npm start
 - Auth0 (panel admin)
 - Tailwind CSS 4
 - Framer Motion / Motion
+- **D3.js** (gráficos interactivos)
