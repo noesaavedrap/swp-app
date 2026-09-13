@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // No standalone — Vercel handles the deployment runtime.
+  // Use output: "standalone" only if you self-host with Docker.
 };
 
 export default nextConfig;
