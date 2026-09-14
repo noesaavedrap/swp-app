@@ -35,38 +35,55 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
     try {
       const response = await fetch("/api/consulta-documento", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tipo: tipoDocumento, numero }),
       });
 
       const payload = await response.json();
-      if (!response.ok || !payload.ok) {
-        throw new Error(payload.error || "No se pudo validar el documento.");
+
+      // Soft success: format OK, maybe no auto-filled names
+      if (payload.ok) {
+        const nextNombres = String(payload.nombres || "").trim();
+        const nextApellidos = String(payload.apellidos || "").trim();
+
+        if (nextNombres) setNombres(nextNombres);
+        if (nextApellidos) setApellidos(nextApellidos);
+
+        setDocumentoValidado(true);
+
+        if (payload.source === "api" && nextNombres) {
+          setInfo(
+            tipoDocumento === "dni"
+              ? "DNI validado. Datos completados automáticamente."
+              : "RUC validado. Razón social completada automáticamente.",
+          );
+        } else {
+          setInfo(
+            payload.message ||
+              "Documento con formato válido. Completa nombres y apellidos manualmente.",
+          );
+        }
+        return;
       }
 
-      const nextNombres = String(payload.nombres || "").trim();
-      const nextApellidos = String(payload.apellidos || "").trim();
-
-      if (!nextNombres) {
-        throw new Error("La consulta devolvió datos incompletos.");
+      // Not found / API error — still allow manual if format was ok or allowManual
+      if (payload.allowManual || response.status === 404) {
+        setDocumentoValidado(true);
+        setError(null);
+        setInfo(
+          payload.error ||
+            "No encontramos datos en el padrón. Puedes completar nombres y apellidos a mano.",
+        );
+        return;
       }
 
-      setNombres(nextNombres);
-      setApellidos(nextApellidos);
-      setDocumentoValidado(true);
-      setInfo(
-        tipoDocumento === "dni"
-          ? "DNI validado correctamente. Se completaron tus datos de registro."
-          : "RUC validado correctamente. Se completaron los datos de la empresa."
-      );
+      throw new Error(payload.error || "No se pudo validar el documento.");
     } catch (err) {
       setDocumentoValidado(false);
       setError(
         err instanceof Error
           ? err.message
-          : "No pudimos validar el documento. Intenta nuevamente."
+          : "No pudimos validar el documento. Intenta nuevamente.",
       );
     } finally {
       setValidatingDocumento(false);
@@ -89,17 +106,33 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
           return;
         }
 
+        // Auto-validate format if user skipped the button
         if (!documentoValidado) {
-          setError("Debes validar tu documento antes de crear la cuenta.");
-          setLoading(false);
-          return;
+          const digits = documento.replace(/\D/g, "");
+          const okLength =
+            (tipoDocumento === "dni" && digits.length === 8) ||
+            (tipoDocumento === "ruc" && digits.length === 11);
+          if (!okLength) {
+            setError(
+              tipoDocumento === "dni"
+                ? "El DNI debe tener 8 dígitos."
+                : "El RUC debe tener 11 dígitos.",
+            );
+            setLoading(false);
+            return;
+          }
+          setDocumentoValidado(true);
         }
 
         const trimmedNombres = nombres.trim();
         const trimmedApellidos = apellidos.trim();
 
         if (!trimmedNombres) {
-          setError("Ingresa el nombre o razón social para registrarte.");
+          setError(
+            tipoDocumento === "dni"
+              ? "Ingresa tus nombres para registrarte."
+              : "Ingresa la razón social para registrarte.",
+          );
           setLoading(false);
           return;
         }
@@ -121,24 +154,22 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
 
         const user = signUpData.user;
         if (user) {
-          const { error: profileError } = await supabase
-            .from("socios")
-            .upsert(
-              {
-                id: user.id,
-                nombres: trimmedNombres,
-                apellidos: trimmedApellidos,
-                documento,
-                rol: "socio",
-              },
-              { onConflict: "id" },
-            );
+          const { error: profileError } = await supabase.from("socios").upsert(
+            {
+              id: user.id,
+              nombres: trimmedNombres,
+              apellidos: trimmedApellidos,
+              documento,
+              rol: "socio",
+            },
+            { onConflict: "id" },
+          );
 
           if (profileError) throw profileError;
         }
 
         setInfo(
-          "Cuenta creada. Revisa tu correo para confirmar el registro, luego inicia sesión."
+          "Cuenta creada. Revisa tu correo para confirmar el registro, luego inicia sesión.",
         );
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -194,6 +225,8 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
                   setNombres("");
                   setApellidos("");
                   setDocumento("");
+                  setError(null);
+                  setInfo(null);
                 }}
                 className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
               >
@@ -209,13 +242,19 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
               <div className="flex gap-2">
                 <input
                   type="text"
+                  inputMode="numeric"
                   value={documento}
                   onChange={(e) => {
-                    setDocumento(e.target.value);
+                    setDocumento(e.target.value.replace(/\D/g, ""));
                     setDocumentoValidado(false);
                   }}
+                  maxLength={tipoDocumento === "dni" ? 8 : 11}
                   className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
-                  placeholder={tipoDocumento === "dni" ? "Ingrese 8 dígitos" : "Ingrese 11 dígitos"}
+                  placeholder={
+                    tipoDocumento === "dni"
+                      ? "8 dígitos"
+                      : "11 dígitos"
+                  }
                 />
                 <Button
                   type="button"
@@ -224,7 +263,11 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
                   onClick={validarDocumento}
                   disabled={validatingDocumento}
                 >
-                  {validatingDocumento ? <Loader2 className="size-4 animate-spin" /> : "Validar"}
+                  {validatingDocumento ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Validar"
+                  )}
                 </Button>
               </div>
             </label>
@@ -238,7 +281,11 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
                 value={nombres}
                 onChange={(e) => setNombres(e.target.value)}
                 className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
-                placeholder={tipoDocumento === "dni" ? "ej. María López" : "ej. Empresa XYZ S.A.C."}
+                placeholder={
+                  tipoDocumento === "dni"
+                    ? "ej. María"
+                    : "ej. Empresa XYZ S.A.C."
+                }
               />
             </label>
 
@@ -289,13 +336,23 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
         </label>
 
         {error && (
-          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>
+          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
+            {error}
+          </p>
         )}
         {info && (
-          <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{info}</p>
+          <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+            {info}
+          </p>
         )}
 
-        <Button type="submit" disabled={loading} variant="dark" size="lg" className="mt-2">
+        <Button
+          type="submit"
+          disabled={loading}
+          variant="dark"
+          size="lg"
+          className="mt-2"
+        >
           {loading && <Loader2 className="size-4 animate-spin" />}
           {mode === "login" ? "Ingresar" : "Crear cuenta"}
         </Button>
@@ -305,14 +362,20 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
         {mode === "login" ? (
           <>
             ¿No tienes cuenta?{" "}
-            <Link href="/socios/registro" className="font-medium text-brand hover:underline">
+            <Link
+              href="/socios/registro"
+              className="font-medium text-brand hover:underline"
+            >
               Crear cuenta
             </Link>
           </>
         ) : (
           <>
             ¿Ya tienes cuenta?{" "}
-            <Link href="/socios/login" className="font-medium text-brand hover:underline">
+            <Link
+              href="/socios/login"
+              className="font-medium text-brand hover:underline"
+            >
               Iniciar sesión
             </Link>
           </>
