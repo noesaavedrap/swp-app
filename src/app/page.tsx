@@ -6,6 +6,7 @@ import IntegrationStrip from "@/components/IntegrationStrip";
 import OperationsPanel from "@/components/OperationsPanel";
 import Allies from "@/components/Allies";
 import Features from "@/components/Features";
+import AnimateUIShowcase from "@/components/AnimateUIShowcase";
 import Showcase from "@/components/Showcase";
 import Pricing from "@/components/Pricing";
 import Testimonials from "@/components/Testimonials";
@@ -24,6 +25,7 @@ export default function Home() {
       <OperationsPanel />
       <Allies />
       <Features />
+      <AnimateUIShowcase />
       <Showcase />
       <Pricing />
       <Testimonials />
