@@ -64,8 +64,12 @@ function Button({
 
   if (render) {
     if (React.isValidElement(render)) {
-      return React.cloneElement(render, {
-        className: cn(classes, (render.props as { className?: string }).className),
+      const renderElement = render as React.ReactElement<{
+        className?: string;
+      }>;
+
+      return React.cloneElement(renderElement, {
+        className: cn(classes, renderElement.props.className),
       });
     }
 
