@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // Netlify/Vercel manage the Next.js runtime directly.
   allowedDevOrigins: ["127.0.0.1", "localhost"],
 };
 

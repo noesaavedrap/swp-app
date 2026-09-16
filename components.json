@@ -17,11 +17,15 @@
     "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",
-    "hooks": "@/hooks"
+    "hooks": "@/hooks",
+    "app": "@/app",
+    "types": "@/types",
+    "content": "@/content"
   },
   "menuColor": "default",
   "menuAccent": "subtle",
   "registries": {
-    "@animate-ui": "https://animate-ui.com/r/{name}.json"
+    "@animate-ui": "https://animate-ui.com/r/{name}.json",
+    "@tailark-oss": "https://oss.tailark.com/r/{name}.json"
   }
 }
