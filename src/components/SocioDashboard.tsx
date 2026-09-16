@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDownLeft, ArrowUpRight, Loader2, Plus, Zap } from "lucide-react";
+import { Activity, ArrowDownLeft, ArrowUpRight, DatabaseZap, Loader2, Plus, Zap } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 
@@ -30,6 +30,11 @@ interface Transaccion {
   creado_en: string;
 }
 
+interface DashboardActivity {
+  type: "dashboard_view" | "transaction_created";
+  createdAt: string;
+}
+
 const metodoOptions = ["efectivo", "yape", "plin", "tarjeta", "transferencia", "pagoefectivo"];
 const tipoOptions: Array<{ value: Transaccion["tipo"]; label: string }> = [
   { value: "ingreso", label: "Ingreso" },
@@ -49,6 +54,8 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
   const [metodo, setMetodo] = useState("efectivo");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activityEvents, setActivityEvents] = useState<DashboardActivity[]>([]);
+  const [mongoConfigured, setMongoConfigured] = useState<boolean | null>(null);
 
   const load = useCallback(async () => {
     const supabase = getSupabase();
@@ -63,6 +70,14 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
 
   useEffect(() => {
     load();
+
+    fetch("/api/dashboard/activity")
+      .then((response) => response.json())
+      .then((data: { configured?: boolean; events?: DashboardActivity[] }) => {
+        setMongoConfigured(Boolean(data.configured));
+        setActivityEvents(data.events ?? []);
+      })
+      .catch(() => setMongoConfigured(false));
 
     const supabase = getSupabase();
     const channel = supabase
@@ -103,6 +118,14 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
       setError(error.message);
       return;
     }
+    fetch("/api/dashboard/activity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "transaction_created",
+        metadata: { tipo, monto: amount, metodo },
+      }),
+    }).catch(() => undefined);
     setShowForm(false);
     setMonto("");
     setConcepto("");
@@ -189,6 +212,51 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
             <ArrowUpRight className="size-5" />
             {formatMoney(egresos)}
           </p>
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-text-tertiary">Actividad del dashboard</p>
+              <h2 className="mt-2 text-lg font-semibold tracking-tight text-text-primary">Tu operación, sincronizada</h2>
+            </div>
+            <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
+              <Activity className="size-5" />
+            </div>
+          </div>
+          <div className="mt-5 space-y-3">
+            {activityEvents.length === 0 ? (
+              <p className="text-sm text-text-tertiary">Aún no hay eventos registrados.</p>
+            ) : (
+              activityEvents.slice(0, 4).map((event, index) => (
+                <div key={`${event.type}-${event.createdAt}-${index}`} className="flex items-center gap-3 rounded-lg border border-border px-3 py-2.5">
+                  <span className="size-2 rounded-full bg-brand" />
+                  <p className="flex-1 text-sm text-text-secondary">
+                    {event.type === "transaction_created" ? "Transacción registrada" : "Sesión del dashboard"}
+                  </p>
+                  <span className="text-xs text-text-tertiary">{formatActivityDate(event.createdAt)}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-[#e8f3ff] text-[#2672c8]">
+              <DatabaseZap className="size-5" />
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-text-tertiary">Infraestructura</p>
+              <h2 className="mt-1 text-lg font-semibold tracking-tight text-text-primary">Datos protegidos</h2>
+            </div>
+          </div>
+          <div className="mt-5 space-y-3 text-sm">
+            <div className="flex items-center justify-between rounded-lg bg-secondary px-3 py-2.5"><span className="text-text-secondary">Supabase</span><span className="font-medium text-brand">Activo</span></div>
+            <div className="flex items-center justify-between rounded-lg bg-secondary px-3 py-2.5"><span className="text-text-secondary">MongoDB Analytics</span><span className={`font-medium ${mongoConfigured ? "text-brand" : "text-text-tertiary"}`}>{mongoConfigured ? "Activo" : "Pendiente"}</span></div>
+          </div>
         </div>
       </div>
 
@@ -344,4 +412,8 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
       </div>
     </div>
   );
+}
+
+function formatActivityDate(iso: string) {
+  return new Date(iso).toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
 }

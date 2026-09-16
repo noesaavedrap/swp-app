@@ -56,13 +56,14 @@ export default function Pricing() {
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
 
   return (
-    <section className="py-10 md:py-14 lg:py-28">
+    <section className="swp-section py-10 md:py-14 lg:py-28">
       <div className="mx-auto max-w-[76rem] px-4 xl:px-0">
         <div className="flex flex-col items-center gap-4 text-center">
-          <h2 className="text-[32px] lg:text-[44px] font-light text-text-primary -tracking-[0.96px] leading-tight">
+          <span className="swp-kicker">Planes que escalan contigo</span>
+          <h2 className="mt-3 text-[32px] lg:text-[44px] font-light text-white -tracking-[0.96px] leading-tight">
             Precios simples para crecer
           </h2>
-          <p className="mt-2 text-md font-light text-text-secondary max-w-[560px] mx-auto">
+          <p className="mt-2 text-md font-light text-white/60 max-w-[560px] mx-auto">
             Elige el plan que mejor se adapte a tu negocio.
           </p>
         </div>
@@ -101,10 +102,10 @@ export default function Pricing() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-2xl border bg-white p-5 flex flex-col ${
+              className={`relative flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-md ${
                 plan.featured
-                  ? "border-2 border-brand-200 bg-[linear-gradient(180deg,#FFFFFF_0%,rgba(209,250,229,0.5)_100%)] shadow-card"
-                  : "border-border"
+                  ? "border-2 border-brand/40 bg-[linear-gradient(180deg,rgba(212,255,0,0.12),rgba(255,255,255,0.035))] shadow-[0_24px_70px_rgba(0,0,0,0.28)]"
+                  : ""
               }`}
             >
               {plan.featured && (
@@ -116,22 +117,22 @@ export default function Pricing() {
               )}
 
               <div>
-                <p className="text-sm font-medium text-text-secondary">
+                <p className="text-sm font-medium text-white/60">
                   {plan.name}
                 </p>
                 <div className="mt-3 flex items-baseline gap-1">
-                  <span className="text-[40px] leading-11 font-light text-text-primary">
+                  <span className="text-[40px] leading-11 font-light text-white">
                     {billing === "annual" ? plan.annualPrice : plan.monthlyPrice === 0
                       ? "$0"
                       : `$${plan.monthlyPrice}`}
                   </span>
                   {plan.monthlyPrice > 0 && (
-                    <span className="text-sm font-light text-text-tertiary">
+                    <span className="text-sm font-light text-white/45">
                       /mes
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-xs text-text-secondary">{plan.description}</p>
+                <p className="mt-1 text-xs text-white/45">{plan.description}</p>
               </div>
 
               <div className="mt-6 space-y-3 flex-1">
@@ -145,8 +146,8 @@ export default function Pricing() {
                     <span
                       className={`text-sm ${
                         feature.included
-                          ? "text-text-primary font-light"
-                          : "text-text-tertiary"
+                          ? "text-white/80 font-light"
+                          : "text-white/35"
                       }`}
                     >
                       {feature.text}

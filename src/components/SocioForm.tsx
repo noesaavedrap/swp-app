@@ -150,10 +150,11 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
         router.refresh();
       }
     } catch (err) {
+      const message = err instanceof Error ? err.message : "";
       setError(
-        err instanceof Error
-          ? err.message
-          : "No pudimos completar el registro. Intenta nuevamente.",
+        message === "Failed to fetch"
+          ? "No se pudo conectar con Supabase. Verifica NEXT_PUBLIC_SUPABASE_URL: el proyecto configurado no responde."
+          : message || "No pudimos completar el registro. Intenta nuevamente.",
       );
     } finally {
       setLoading(false);
@@ -202,12 +203,13 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
               </select>
             </label>
 
-            <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="documento" className="text-xs font-medium text-text-primary uppercase tracking-wide">
                 {tipoDocumento === "dni" ? "DNI" : "RUC"}
-              </span>
+              </label>
               <div className="flex gap-2">
                 <input
+                  id="documento"
                   type="text"
                   value={documento}
                   onChange={(e) => {
@@ -221,13 +223,14 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
                   type="button"
                   variant="secondary"
                   size="sm"
+                  className="relative z-10 shrink-0 cursor-pointer"
                   onClick={validarDocumento}
                   disabled={validatingDocumento}
                 >
                   {validatingDocumento ? <Loader2 className="size-4 animate-spin" /> : "Validar"}
                 </Button>
               </div>
-            </label>
+            </div>
 
             <label className="flex flex-col gap-1.5">
               <span className="text-xs font-medium text-text-primary uppercase tracking-wide">

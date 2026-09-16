@@ -39,12 +39,12 @@ export default function Footer() {
   const style = { "--spotlight-x": `${spotlight.x}%`, "--spotlight-y": `${spotlight.y}%` } as CSSProperties;
 
   return (
-    <footer onMouseMove={handleMove} style={style} className="relative overflow-hidden bg-foreground text-white">
+    <footer onMouseMove={handleMove} style={style} className="relative overflow-hidden border-t border-white/10 bg-[#07090d] text-white">
       <div className="pointer-events-none absolute inset-0 opacity-50 [background:radial-gradient(600px_circle_at_var(--spotlight-x)_var(--spotlight-y),rgba(52,211,153,0.16),transparent_65%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:44px_44px] [mask-image:linear-gradient(to_bottom,black,transparent_75%)]" />
 
       <div className="relative mx-auto max-w-[76rem] px-4 pb-8 pt-14 xl:px-0 lg:pt-20">
-        <div className="mb-16 grid gap-10 rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="mb-16 grid gap-10 rounded-2xl border border-brand/25 bg-[radial-gradient(circle_at_15%_0%,rgba(212,255,0,0.12),transparent_35%),rgba(255,255,255,0.035)] p-6 shadow-[0_24px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl md:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-brand-light">Construye con SWP</p>
             <h2 className="mt-3 max-w-2xl text-3xl font-light leading-tight tracking-tight text-white md:text-4xl">Tu próxima etapa empieza con una mejor infraestructura.</h2>

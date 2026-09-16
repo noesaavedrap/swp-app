@@ -36,13 +36,14 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-10 md:py-14 lg:py-28" id="faq">
+    <section className="swp-section py-10 md:py-14 lg:py-28" id="faq">
       <div className="mx-auto max-w-[76rem] px-4 xl:px-0">
         <div className="flex flex-col items-center gap-4 text-center">
-          <h2 className="text-[32px] lg:text-[44px] font-light text-text-primary -tracking-[0.96px] leading-tight">
+          <span className="swp-kicker">Respuestas claras</span>
+          <h2 className="mt-3 text-[32px] lg:text-[44px] font-light text-white -tracking-[0.96px] leading-tight">
             Preguntas frecuentes
           </h2>
-          <p className="mt-2 text-md font-light text-text-secondary max-w-[560px] mx-auto">
+          <p className="mt-2 text-md font-light text-white/60 max-w-[560px] mx-auto">
             Todo lo que necesitas saber sobre SWP.
           </p>
         </div>
@@ -51,10 +52,10 @@ export default function FAQ() {
           {faqs.map((faq, i) => {
             const isOpen = openIndex === i;
             return (
-              <div key={i} className="rounded-xl bg-white border border-border">
+              <div key={i} className="rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md">
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between px-5 py-6 text-start text-lg font-light text-text-primary"
+                  className="flex w-full items-center justify-between px-5 py-6 text-start text-lg font-light text-white"
                 >
                   {faq.question}
                   {isOpen ? (
@@ -73,7 +74,7 @@ export default function FAQ() {
                   )}
                 >
                   <div className="overflow-hidden">
-                    <p className="rounded-xl bg-secondary px-5 py-6 font-light text-text-secondary">
+                    <p className="rounded-xl bg-white/[0.035] px-5 py-6 font-light text-white/60">
                       {faq.answer}
                     </p>
                   </div>

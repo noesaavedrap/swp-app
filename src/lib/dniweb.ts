@@ -85,25 +85,30 @@ export async function consultarDocumento(
 
   const numero = validateDocumentoInput(tipo, value);
   const baseUrl = getJsonPeBaseUrl().replace(/\/$/, "");
-  const payloadBody = JSON.stringify({ [tipo]: numero });
   const candidates = [
-    `${baseUrl}/api/${tipo}`,
-    `${baseUrl}/api/${tipo.toUpperCase()}`,
-    `${baseUrl}/api/v1/${tipo}`,
+    { url: `${baseUrl}/api/${tipo}/${numero}`, method: "GET" as const },
+    { url: `${baseUrl}/api/${tipo.toUpperCase()}/${numero}`, method: "GET" as const },
+    { url: `${baseUrl}/api/${tipo}`, method: "POST" as const },
+    { url: `${baseUrl}/api/${tipo.toUpperCase()}`, method: "POST" as const },
+    { url: `${baseUrl}/api/v1/${tipo}`, method: "POST" as const },
   ];
 
   let lastError: Error | null = null;
 
-  for (const url of candidates) {
+  for (const candidate of candidates) {
     try {
-      const response = await fetch(url, {
-        method: "POST",
+      const response = await fetch(candidate.url, {
+        method: candidate.method,
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
-          "Content-Type": "application/json",
         },
-        body: payloadBody,
+        ...(candidate.method === "POST"
+          ? {
+              "Content-Type": "application/json",
+              body: JSON.stringify({ [tipo]: numero }),
+            }
+          : {}),
         cache: "no-store",
       });
 

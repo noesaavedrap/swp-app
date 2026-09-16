@@ -12,6 +12,16 @@ export function getSupabase() {
     );
   }
 
+  try {
+    const parsedUrl = new URL(url);
+    if (parsedUrl.protocol !== "https:") {
+      throw new Error("NEXT_PUBLIC_SUPABASE_URL debe usar HTTPS.");
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("debe usar HTTPS")) throw error;
+    throw new Error("NEXT_PUBLIC_SUPABASE_URL no es una URL válida.");
+  }
+
   if (!client) {
     client = createBrowserClient(url, publishableKey);
   }
