@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { currentUser } from "@authgear/nextjs/server";
+import { authgearConfig } from "@/lib/authgear";
 import { getSupabaseServer } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -22,14 +24,12 @@ function isOneOf<T extends readonly string[]>(value: unknown, options: T): value
 
 export async function POST(request: Request) {
   try {
-    const supabase = await getSupabaseServer();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
+    const user = await currentUser(authgearConfig);
     if (!user) {
       return NextResponse.json({ ok: false, error: "No autenticado" }, { status: 401 });
     }
+
+    const supabase = await getSupabaseServer();
 
     const body = (await request.json()) as Record<string, unknown>;
     const tipo = body.tipo;

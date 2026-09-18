@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { currentUser } from "@authgear/nextjs/server";
+import { authgearConfig } from "@/lib/authgear";
 import { getMongoDb } from "@/lib/mongodb";
-import { getSupabaseServer } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
 
@@ -13,11 +14,7 @@ interface DashboardEvent {
 
 export async function GET() {
   try {
-    const supabase = await getSupabaseServer();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
+    const user = await currentUser(authgearConfig);
     if (!user) {
       return NextResponse.json({ ok: false, error: "No autenticado" }, { status: 401 });
     }
@@ -57,10 +54,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const supabase = await getSupabaseServer();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await currentUser(authgearConfig);
     if (!user) {
       return NextResponse.json({ ok: false, error: "No autenticado" }, { status: 401 });
     }
