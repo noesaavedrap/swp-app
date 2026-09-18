@@ -40,6 +40,7 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
   const [turnstileToken, setTurnstileToken] = useState<string>("");
   const [turnstileWidgetId, setTurnstileWidgetId] = useState<string | null>(null);
   const turnstileRef = useRef<HTMLDivElement | null>(null);
+  const turnstileWidgetRef = useRef<string | null>(null);
 
   useEffect(() => {
     const session = getAuthgearSessionCookie();
@@ -58,8 +59,8 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
     const renderWidget = () => {
       if (!window.turnstile || !container) return;
 
-      if (turnstileWidgetId) {
-        window.turnstile.remove(turnstileWidgetId);
+      if (turnstileWidgetRef.current) {
+        window.turnstile.remove(turnstileWidgetRef.current);
       }
 
       const widgetId = window.turnstile.render(container, {
@@ -71,6 +72,7 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
         "error-callback": () => setTurnstileToken(""),
       });
 
+      turnstileWidgetRef.current = widgetId;
       setTurnstileWidgetId(widgetId);
     };
 
@@ -83,8 +85,9 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
       script.onload = renderWidget;
       document.head.appendChild(script);
       return () => {
-        if (turnstileWidgetId) {
-          window.turnstile?.remove(turnstileWidgetId);
+        if (turnstileWidgetRef.current) {
+          window.turnstile?.remove(turnstileWidgetRef.current);
+          turnstileWidgetRef.current = null;
         }
       };
     }
@@ -94,11 +97,12 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
     }
 
     return () => {
-      if (turnstileWidgetId) {
-        window.turnstile?.remove(turnstileWidgetId);
+      if (turnstileWidgetRef.current) {
+        window.turnstile?.remove(turnstileWidgetRef.current);
+        turnstileWidgetRef.current = null;
       }
     };
-  }, [mode, turnstileWidgetId]);
+  }, [mode]);
 
   const verifyTurnstile = async () => {
     if (!turnstileToken) {
@@ -223,7 +227,7 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
         throw new Error("No se pudo cargar la configuración de Authgear.");
       }
 
-      const { verifier, challenge } = createPkcePair();
+      const { verifier, challenge } = await createPkcePair();
       const state = Buffer.from(`${Date.now()}-${Math.random().toString(16).slice(2)}`).toString("base64url");
       const nonce = Buffer.from(`${Date.now()}-${Math.random().toString(16).slice(2)}`).toString("base64url");
 
