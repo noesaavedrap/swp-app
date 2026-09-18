@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Activity, ArrowDownLeft, ArrowUpRight, DatabaseZap, Loader2, Plus, Zap } from "lucide-react";
 import { getSupabase, hasSupabaseConfig } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -43,7 +42,6 @@ const tipoOptions: Array<{ value: Transaccion["tipo"]; label: string }> = [
 ];
 
 export default function SocioDashboard({ socio }: { socio: Socio }) {
-  const router = useRouter();
   const [transacciones, setTransacciones] = useState<Transaccion[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
