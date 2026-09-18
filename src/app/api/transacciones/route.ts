@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from("transacciones")
       .insert({
-        socio_id: user.id,
+        socio_id: user.sub,
         tipo: tipo as TransactionType,
         monto: Math.round(monto * 100) / 100,
         concepto: concepto || null,

@@ -27,12 +27,12 @@ export async function GET() {
     const events = db.collection<DashboardEvent>("dashboard_events");
     await events.insertOne({
       type: "dashboard_view",
-      socioId: user.id,
+      socioId: user.sub,
       createdAt: new Date(),
     });
 
     const recentEvents = await events
-      .find({ socioId: user.id })
+      .find({ socioId: user.sub })
       .sort({ createdAt: -1 })
       .limit(8)
       .project({ _id: 0, type: 1, metadata: 1, createdAt: 1 })
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
 
     await db.collection<DashboardEvent>("dashboard_events").insertOne({
       type,
-      socioId: user.id,
+      socioId: user.sub,
       metadata: body.metadata,
       createdAt: new Date(),
     });
