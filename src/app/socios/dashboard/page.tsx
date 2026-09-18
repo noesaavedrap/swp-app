@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { getSupabase, hasSupabaseConfig } from "@/lib/supabase";
+import { getAuthgearConfig, getAuthgearSessionCookie } from "@/lib/authgear";
 import SocioDashboard from "@/components/SocioDashboard";
 
 interface Socio {
@@ -23,40 +23,30 @@ export default function SocioDashboardPage() {
   const [socio, setSocio] = useState<Socio | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuth = useCallback(async () => {
-    if (!hasSupabaseConfig()) {
-      setLoading(false);
-      return;
-    }
+  useEffect(() => {
+    const config = getAuthgearConfig();
+    const session = getAuthgearSessionCookie();
 
-    const supabase = getSupabase();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    if (!config || !session?.sub) {
       router.push("/socios/login");
       return;
     }
 
-    const { data: socioData, error } = await supabase
-      .from("socios")
-      .select("*")
-      .eq("id", user.id)
-      .single();
+    const user = {
+      id: session.sub,
+      nombres: session.given_name || session.name || "Socio",
+      apellidos: session.family_name || "",
+      documento: null,
+      telefono: null,
+      saldo: 0,
+      activo: true,
+      rol: "socio",
+      creado_en: new Date().toISOString(),
+    };
 
-    if (error || !socioData) {
-      router.push("/socios/login");
-      return;
-    }
-
-    setSocio(socioData as Socio);
+    setSocio(user);
     setLoading(false);
   }, [router]);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
 
   if (loading) {
     return (
@@ -66,25 +56,6 @@ export default function SocioDashboardPage() {
           <p className="text-sm font-light text-text-tertiary">
             Verificando sesión...
           </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!socio && !hasSupabaseConfig()) {
-    return (
-      <div className="flex min-h-[calc(100vh-56px)] items-center justify-center px-4">
-        <div className="max-w-md rounded-2xl border border-border bg-white p-8 text-center shadow-card">
-          <h1 className="text-xl font-semibold text-text-primary">Autenticación pendiente</h1>
-          <p className="mt-3 text-sm text-text-secondary">
-            Configura Authgear o Supabase para habilitar la sesión de socios.
-          </p>
-          <a
-            href="/socios/login"
-            className="mt-5 inline-flex rounded-full bg-brand px-4 py-2 text-sm font-medium text-black"
-          >
-            Ir al login
-          </a>
         </div>
       </div>
     );

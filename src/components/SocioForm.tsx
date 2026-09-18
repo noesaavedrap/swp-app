@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Zap, Loader2 } from "lucide-react";
-import { getSupabase } from "@/lib/supabase";
+import {
+  createPkcePair,
+  getAuthgearConfig,
+  getAuthgearDiscovery,
+  getAuthgearSessionCookie,
+  makeAuthgearAuthorizeUrl,
+} from "@/lib/authgear";
 import { getTurnstileSiteKey } from "@/lib/turnstile";
 import { Button } from "@/components/ui/button";
 
@@ -34,6 +40,13 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
   const [turnstileToken, setTurnstileToken] = useState<string>("");
   const [turnstileWidgetId, setTurnstileWidgetId] = useState<string | null>(null);
   const turnstileRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const session = getAuthgearSessionCookie();
+    if (session?.sub) {
+      router.push("/socios/dashboard");
+    }
+  }, [router]);
 
   useEffect(() => {
     const container = turnstileRef.current;
@@ -198,100 +211,44 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
         return;
       }
 
-      const supabase = getSupabase();
-
-      if (mode === "signup") {
-        if (!documento.trim()) {
-          setError("Ingresa tu DNI o RUC para continuar.");
-          setLoading(false);
-          return;
-        }
-
-        // Auto-validate format if user skipped the button
-        if (!documentoValidado) {
-          const digits = documento.replace(/\D/g, "");
-          const okLength =
-            (tipoDocumento === "dni" && digits.length === 8) ||
-            (tipoDocumento === "ruc" && digits.length === 11);
-          if (!okLength) {
-            setError(
-              tipoDocumento === "dni"
-                ? "El DNI debe tener 8 dígitos."
-                : "El RUC debe tener 11 dígitos.",
-            );
-            setLoading(false);
-            return;
-          }
-          setDocumentoValidado(true);
-        }
-
-        const trimmedNombres = nombres.trim();
-        const trimmedApellidos = apellidos.trim();
-
-        if (!trimmedNombres) {
-          setError(
-            tipoDocumento === "dni"
-              ? "Ingresa tus nombres para registrarte."
-              : "Ingresa la razón social para registrarte.",
-          );
-          setLoading(false);
-          return;
-        }
-
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              nombres: trimmedNombres,
-              apellidos: trimmedApellidos,
-              documento,
-              tipo_documento: tipoDocumento,
-            },
-          },
-        });
-
-        if (signUpError) throw signUpError;
-
-        const user = signUpData.user;
-        if (user) {
-          const { error: profileError } = await supabase.from("socios").upsert(
-            {
-              id: user.id,
-              nombres: trimmedNombres,
-              apellidos: trimmedApellidos,
-              documento,
-              rol: "socio",
-            },
-            { onConflict: "id" },
-          );
-
-          if (profileError) throw profileError;
-        }
-
-        setInfo(
-          "Cuenta creada. Revisa tu correo para confirmar el registro, luego inicia sesión.",
-        );
-      } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (signInError) throw signInError;
-        router.push("/socios/dashboard");
-        router.refresh();
+      const config = getAuthgearConfig();
+      if (!config) {
+        throw new Error("Authgear no está configurado. Agrega NEXT_PUBLIC_AUTHGEAR_ISSUER y NEXT_PUBLIC_AUTHGEAR_CLIENT_ID.");
       }
+
+      const discovery = await getAuthgearDiscovery();
+      const authorizationEndpoint = discovery?.authorization_endpoint;
+
+      if (!authorizationEndpoint) {
+        throw new Error("No se pudo cargar la configuración de Authgear.");
+      }
+
+      const { verifier, challenge } = createPkcePair();
+      const state = Buffer.from(`${Date.now()}-${Math.random().toString(16).slice(2)}`).toString("base64url");
+      const nonce = Buffer.from(`${Date.now()}-${Math.random().toString(16).slice(2)}`).toString("base64url");
+
+      sessionStorage.setItem("swp_authgear_pkce", verifier);
+      sessionStorage.setItem("swp_authgear_state", state);
+      sessionStorage.setItem("swp_authgear_mode", mode);
+      sessionStorage.setItem("swp_authgear_nonce", nonce);
+
+      const url = makeAuthgearAuthorizeUrl({
+        state,
+        nonce,
+        codeChallenge: challenge,
+        redirectUri: config.redirectUri,
+        mode,
+        clientId: config.clientId,
+        authorizationEndpoint,
+      });
+
+      window.location.href = url;
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
-      setError(
-        message === "Failed to fetch"
-          ? "No se pudo conectar con Supabase. Verifica NEXT_PUBLIC_SUPABASE_URL: el proyecto configurado no responde."
-          : message || "No pudimos completar el registro. Intenta nuevamente.",
-      );
-    } finally {
+      setError(message || "No pudimos iniciar la sesión de Authgear.");
       setLoading(false);
     }
-  };
+  }; 
 
   return (
     <div className="mx-auto w-full max-w-md rounded-2xl border border-border bg-white p-8 shadow-card">
