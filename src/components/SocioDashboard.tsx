@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Activity, ArrowDownLeft, ArrowUpRight, DatabaseZap, Loader2, Plus, Zap } from "lucide-react";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, hasSupabaseConfig } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 
 interface Socio {
@@ -60,6 +60,12 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
 
   const load = useCallback(async () => {
     setLoadError(null);
+    if (!hasSupabaseConfig()) {
+      setTransacciones([]);
+      setLoading(false);
+      return;
+    }
+
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("transacciones")
@@ -84,6 +90,10 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
         setActivityEvents(data.events ?? []);
       })
       .catch(() => setMongoConfigured(false));
+
+    if (!hasSupabaseConfig()) {
+      return;
+    }
 
     const supabase = getSupabase();
     const channel = supabase
@@ -163,7 +173,11 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
     });
 
   const logout = async () => {
-    await getSupabase().auth.signOut();
+    if (hasSupabaseConfig()) {
+      await getSupabase().auth.signOut();
+    }
+
+    document.cookie = "swp_authgear_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     router.push("/socios");
     router.refresh();
   };

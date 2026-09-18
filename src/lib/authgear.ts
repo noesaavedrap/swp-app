@@ -1,5 +1,3 @@
-import { createHash, randomBytes } from "crypto";
-
 export interface AuthgearConfig {
   issuer: string;
   clientId: string;
@@ -22,18 +20,35 @@ export function getAuthgearConfig(): AuthgearConfig | null {
   };
 }
 
-function base64UrlEncode(value: Buffer | Uint8Array | string) {
-  const source = typeof value === "string" ? Buffer.from(value) : Buffer.from(value);
-  return source
-    .toString("base64")
+function bytesToBase64Url(bytes: Uint8Array) {
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/g, "");
 }
 
-export function createPkcePair() {
-  const verifier = base64UrlEncode(randomBytes(32));
-  const challenge = base64UrlEncode(createHash("sha256").update(verifier).digest());
+function arrayBufferToBase64Url(buffer: ArrayBuffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+export async function createPkcePair() {
+  const randomBytes = new Uint8Array(32);
+  crypto.getRandomValues(randomBytes);
+  const verifier = bytesToBase64Url(randomBytes);
+  const challengeBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+  const challenge = arrayBufferToBase64Url(challengeBuffer);
 
   return { verifier, challenge };
 }
@@ -86,7 +101,8 @@ export function decodeJwtPayload<T = Record<string, unknown>>(jwt: string): T | 
   try {
     const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
     const padded = payload.padEnd(Math.ceil(payload.length / 4) * 4, "=");
-    return JSON.parse(Buffer.from(padded, "base64").toString("utf-8")) as T;
+    const binary = atob(padded);
+    return JSON.parse(binary) as T;
   } catch {
     return null;
   }
