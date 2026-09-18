@@ -173,13 +173,7 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
     });
 
   const logout = async () => {
-    if (hasSupabaseConfig()) {
-      await getSupabase().auth.signOut();
-    }
-
-    document.cookie = "swp_authgear_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    router.push("/socios");
-    router.refresh();
+    window.location.href = "/api/auth/logout";
   };
 
   return (

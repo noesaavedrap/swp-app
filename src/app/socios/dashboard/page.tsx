@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { currentUser } from "@authgear/nextjs/server";
 import { authgearConfig } from "@/lib/authgear";
 import SocioDashboard from "@/components/SocioDashboard";
