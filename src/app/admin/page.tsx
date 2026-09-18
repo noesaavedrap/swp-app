@@ -1,5 +1,6 @@
-import { auth0 } from "@/lib/auth0";
 import { redirect } from "next/navigation";
+import { currentUser } from "@authgear/nextjs/server";
+import { authgearConfig } from "@/lib/authgear";
 import { Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminStatsSection from "@/components/admin/AdminStatsSection";
@@ -7,16 +8,14 @@ import AdminSociosTable from "@/components/admin/AdminSociosTable";
 import AdminTransaccionesTable from "@/components/admin/AdminTransaccionesTable";
 
 export default async function AdminPage() {
-  if (!auth0) redirect("/");
-
-  const session = await auth0.getSession();
-  if (!session?.user) redirect("/auth/login");
+  const sessionUser = await currentUser(authgearConfig);
+  if (!sessionUser) redirect("/api/auth/login?returnTo=/admin");
 
   const user = {
-    email: session.user.email,
-    name: session.user.name,
-    picture: session.user.picture,
-    sub: session.user.sub,
+    email: sessionUser.email,
+    name: sessionUser.name,
+    picture: sessionUser.picture,
+    sub: sessionUser.sub,
   };
 
   return (
@@ -54,7 +53,7 @@ export default async function AdminPage() {
               </div>
             </div>
             <Button variant="secondary" size="sm" asChild>
-              <a href="/auth/logout">Salir</a>
+              <a href="/api/auth/logout">Salir</a>
             </Button>
           </div>
         </div>
@@ -92,7 +91,7 @@ export default async function AdminPage() {
             </div>
             <div className="rounded-xl bg-secondary p-4">
               <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
-                Auth0 Subject
+                Authgear Subject
               </p>
               <p className="mt-1 text-sm font-mono text-text-primary break-all">
                 {user.sub}
@@ -105,7 +104,7 @@ export default async function AdminPage() {
               <div className="mt-2 flex items-center gap-2">
                 <span className="size-2 rounded-full bg-brand" />
                 <span className="text-sm font-medium text-text-primary">
-                  Autenticado (Auth0)
+                  Autenticado (Authgear)
                 </span>
               </div>
             </div>

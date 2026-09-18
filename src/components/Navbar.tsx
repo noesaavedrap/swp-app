@@ -50,7 +50,7 @@ export default function Navbar() {
   useEffect(() => {
     const controller = new AbortController()
 
-    fetch("/auth/profile", { signal: controller.signal })
+    fetch("/api/auth/userinfo", { signal: controller.signal })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setUser(data?.user?.email ?? null))
       .catch((error: unknown) => {
@@ -98,16 +98,16 @@ export default function Navbar() {
               <>
                 <span className="max-w-[12rem] truncate text-sm font-light text-text-secondary">{user}</span>
                 <Button variant="dark" size="sm" asChild>
-                  <a href="/auth/logout">Salir</a>
+                  <a href="/api/auth/logout">Salir</a>
                 </Button>
               </>
             ) : (
               <>
-                <a href="/auth/login?screen_hint=signup" className="text-sm font-light text-text-secondary transition-colors hover:text-white">
+                  <a href="/api/auth/login?returnTo=/socios/registro" className="text-sm font-light text-text-secondary transition-colors hover:text-white">
                   Crear cuenta
                 </a>
                 <Button variant="primary" size="sm" asChild>
-                  <a href="/auth/login">Iniciar sesión</a>
+                  <a href="/api/auth/login?returnTo=/socios/dashboard">Iniciar sesión</a>
                 </Button>
               </>
             )}

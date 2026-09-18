@@ -19,11 +19,11 @@ export default function AdminPanel({ user }: AdminPanelProps) {
             Panel de Administración
           </h1>
           <p className="mt-1 text-sm font-light text-text-tertiary">
-            Acceso restringido — sesión verificada con Auth0.
+            Acceso restringido — sesión verificada con Authgear.
           </p>
         </div>
         <Button variant="dark" size="sm" asChild>
-          <a href="/auth/logout">Cerrar sesión</a>
+          <a href="/api/auth/logout">Cerrar sesión</a>
         </Button>
       </div>
 
@@ -55,7 +55,7 @@ export default function AdminPanel({ user }: AdminPanelProps) {
 
         <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
           <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
-            Auth0 Subject ID
+            Authgear Subject ID
           </p>
           <p className="mt-2 text-sm font-mono text-text-primary break-all">
             {user.sub}
@@ -69,7 +69,7 @@ export default function AdminPanel({ user }: AdminPanelProps) {
           <div className="mt-3 flex items-center gap-2">
             <span className="size-2 rounded-full bg-brand" />
             <span className="text-sm font-medium text-text-primary">
-              Autenticado (Auth0)
+              Autenticado (Authgear)
             </span>
           </div>
         </div>
