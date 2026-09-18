@@ -54,17 +54,23 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
   const [metodo, setMetodo] = useState("efectivo");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [activityEvents, setActivityEvents] = useState<DashboardActivity[]>([]);
   const [mongoConfigured, setMongoConfigured] = useState<boolean | null>(null);
 
   const load = useCallback(async () => {
+    setLoadError(null);
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("transacciones")
       .select("*")
       .order("creado_en", { ascending: false })
       .limit(100);
-    if (!error && data) setTransacciones(data as Transaccion[]);
+    if (error) {
+      setLoadError("No pudimos cargar tus movimientos. Intenta actualizar.");
+    } else if (data) {
+      setTransacciones(data as Transaccion[]);
+    }
     setLoading(false);
   }, []);
 
@@ -103,19 +109,15 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
       return;
     }
     setSaving(true);
-    const supabase = getSupabase();
-    const { error } = await supabase.from("transacciones").insert({
-      socio_id: socio.id,
-      tipo,
-      monto: amount,
-      concepto: concepto.trim() || null,
-      contraparte: controparteLabel(),
-      metodo,
-      estado: "completado",
+    const response = await fetch("/api/transacciones", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tipo, monto: amount, concepto, contraparte: controparteLabel(), metodo }),
     });
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
     setSaving(false);
-    if (error) {
-      setError(error.message);
+    if (!response.ok) {
+      setError(payload.error || "No se pudo guardar la transacción.");
       return;
     }
     fetch("/api/dashboard/activity", {
@@ -141,11 +143,12 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
   };
 
   const saldo = Number(socio.saldo);
+  const currentMonth = new Date().toISOString().slice(0, 7);
   const ingresos = transacciones
-    .filter((t) => t.estado === "completado" && t.tipo === "ingreso")
+    .filter((t) => t.estado === "completado" && t.tipo === "ingreso" && t.creado_en.startsWith(currentMonth))
     .reduce((acc, t) => acc + Number(t.monto), 0);
   const egresos = transacciones
-    .filter((t) => t.estado === "completado" && t.tipo === "egreso")
+    .filter((t) => t.estado === "completado" && t.tipo === "egreso" && t.creado_en.startsWith(currentMonth))
     .reduce((acc, t) => acc + Number(t.monto), 0);
 
   const formatMoney = (n: number) =>
@@ -338,6 +341,23 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
               </select>
             </label>
 
+            {tipo === "transferencia" && (
+              <label className="flex flex-col gap-1.5">
+                <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
+                  Contraparte
+                </span>
+                <input
+                  type="text"
+                  required
+                  maxLength={120}
+                  value={contraparte}
+                  onChange={(e) => setContraparte(e.target.value)}
+                  className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
+                  placeholder="Persona o cuenta destino"
+                />
+              </label>
+            )}
+
             <div className="flex items-end gap-2">
               <Button type="submit" disabled={saving} size="lg" className="flex-1">
                 {saving && <Loader2 className="size-4 animate-spin" />}
@@ -353,6 +373,15 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
               </Button>
             </div>
           </form>
+        )}
+
+        {loadError && (
+          <div className="flex items-center justify-between gap-4 border-b border-border bg-red-50 px-6 py-3 text-sm text-red-700">
+            <span>{loadError}</span>
+            <Button type="button" variant="ghost" size="sm" onClick={load}>
+              Reintentar
+            </Button>
+          </div>
         )}
 
         {error && (

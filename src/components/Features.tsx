@@ -75,7 +75,7 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
   const spotlightStyle = { "--spotlight-x": `${spotlight.x}%`, "--spotlight-y": `${spotlight.y}%` } as CSSProperties;
 
   return (
-    <motion.article initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.55, delay: index * 0.08 }} onMouseMove={handleMove} style={spotlightStyle} className={`group relative min-h-[370px] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-[0_20px_40px_rgba(0,0,0,0.25)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-brand/30 hover:shadow-[0_24px_70px_rgba(0,0,0,0.34)] md:p-7 ${feature.span}`}>
+    <motion.article id={feature.visual} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.55, delay: index * 0.08 }} onMouseMove={handleMove} style={spotlightStyle} className={`group relative min-h-[370px] scroll-mt-28 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-[0_20px_40px_rgba(0,0,0,0.25)] backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-brand/30 hover:shadow-[0_24px_70px_rgba(0,0,0,0.34)] md:p-7 ${feature.span}`}>
       <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 [background:radial-gradient(340px_circle_at_var(--spotlight-x)_var(--spotlight-y),rgba(212,255,0,0.16),transparent_70%)]" />
       <div className="relative z-10 flex h-full flex-col justify-between gap-8">
         <div>

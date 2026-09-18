@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const allies = [
   {
@@ -27,7 +28,7 @@ const allies = [
 
 export default function Allies() {
   const items = [...allies, ...allies];
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = usePrefersReducedMotion();
 
   return (
     <section className="swp-section overflow-hidden border-y border-white/10 py-14 md:py-20" aria-labelledby="allies-title">
@@ -80,4 +81,19 @@ export default function Allies() {
       </div>
     </section>
   );
+}
+
+function usePrefersReducedMotion() {
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+    mediaQuery.addEventListener("change", updatePreference);
+    return () => mediaQuery.removeEventListener("change", updatePreference);
+  }, []);
+
+  return reducedMotion;
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getMongoDb, isMongoConfigured } from "@/lib/mongodb";
+import { getMongoDb } from "@/lib/mongodb";
 import { getSupabaseServer } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -48,7 +48,10 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Dashboard activity error", error);
-    return NextResponse.json({ ok: true, configured: false, events: [] });
+    return NextResponse.json(
+      { ok: false, configured: false, events: [], error: "No se pudo cargar la actividad" },
+      { status: 503 },
+    );
   }
 }
 
@@ -58,21 +61,25 @@ export async function POST(request: Request) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
     if (!user) {
       return NextResponse.json({ ok: false, error: "No autenticado" }, { status: 401 });
-    }
-
-    const db = await getMongoDb();
-    if (!db) {
-      return NextResponse.json({ ok: true, configured: false });
     }
 
     const body = (await request.json()) as {
       type?: DashboardEvent["type"];
       metadata?: DashboardEvent["metadata"];
     };
-    const type = body.type === "transaction_created" ? body.type : "dashboard_view";
+    if (body.type !== "transaction_created" && body.type !== "dashboard_view") {
+      return NextResponse.json({ ok: false, error: "Tipo de evento inválido" }, { status: 400 });
+    }
+    const type = body.type;
+    const db = await getMongoDb();
+    if (!db) {
+      return NextResponse.json(
+        { ok: false, configured: false, error: "Analítica no configurada" },
+        { status: 503 },
+      );
+    }
 
     await db.collection<DashboardEvent>("dashboard_events").insertOne({
       type,
@@ -84,6 +91,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, configured: true });
   } catch (error) {
     console.error("Dashboard activity write error", error);
-    return NextResponse.json({ ok: true, configured: false });
+    return NextResponse.json(
+      { ok: false, configured: false, error: "No se pudo registrar el evento" },
+      { status: 500 },
+    );
   }
 }

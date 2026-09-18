@@ -4,6 +4,7 @@ export interface DocumentoConsultaResult {
   tipo: DocumentoTipo;
   numero: string;
   data: Record<string, unknown>;
+  source: "api" | "manual";
 }
 
 function sanitizeDocumento(value: string) {
@@ -78,9 +79,12 @@ export async function consultarDocumento(
   const token = overrideToken ?? getJsonPeToken();
 
   if (!token) {
-    throw new Error(
-      "Falta la variable JSONPE_API_TOKEN (o DNIWEB_API_TOKEN) en el entorno para consultar DNI/RUC.",
-    );
+    return {
+      tipo,
+      numero: validateDocumentoInput(tipo, value),
+      data: {},
+      source: "manual",
+    };
   }
 
   const numero = validateDocumentoInput(tipo, value);
@@ -120,6 +124,7 @@ export async function consultarDocumento(
           tipo,
           numero,
           data: normalized,
+          source: "api",
         };
       }
 
