@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, hasSupabaseConfig } from "@/lib/supabase";
 import SocioDashboard from "@/components/SocioDashboard";
 
 interface Socio {
@@ -24,6 +24,11 @@ export default function SocioDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   const checkAuth = useCallback(async () => {
+    if (!hasSupabaseConfig()) {
+      setLoading(false);
+      return;
+    }
+
     const supabase = getSupabase();
     const {
       data: { user },
@@ -61,6 +66,25 @@ export default function SocioDashboardPage() {
           <p className="text-sm font-light text-text-tertiary">
             Verificando sesión...
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!socio && !hasSupabaseConfig()) {
+    return (
+      <div className="flex min-h-[calc(100vh-56px)] items-center justify-center px-4">
+        <div className="max-w-md rounded-2xl border border-border bg-white p-8 text-center shadow-card">
+          <h1 className="text-xl font-semibold text-text-primary">Autenticación pendiente</h1>
+          <p className="mt-3 text-sm text-text-secondary">
+            Configura Authgear o Supabase para habilitar la sesión de socios.
+          </p>
+          <a
+            href="/socios/login"
+            className="mt-5 inline-flex rounded-full bg-brand px-4 py-2 text-sm font-medium text-black"
+          >
+            Ir al login
+          </a>
         </div>
       </div>
     );
