@@ -13,5 +13,5 @@ services:
         required: false
     environment:
       PORT: ${PORT:-3000}
-      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
+      APP_BASE_URL: ${APP_BASE_URL:-https://swpecom.xyz}
     restart: unless-stopped
