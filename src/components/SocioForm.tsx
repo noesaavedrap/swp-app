@@ -228,8 +228,14 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
       }
 
       const { verifier, challenge } = await createPkcePair();
-      const state = Buffer.from(`${Date.now()}-${Math.random().toString(16).slice(2)}`).toString("base64url");
-      const nonce = Buffer.from(`${Date.now()}-${Math.random().toString(16).slice(2)}`).toString("base64url");
+      const state = window.btoa(`${Date.now()}-${Math.random().toString(16).slice(2)}`)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
+      const nonce = window.btoa(`${Date.now()}-${Math.random().toString(16).slice(2)}`)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
 
       sessionStorage.setItem("swp_authgear_pkce", verifier);
       sessionStorage.setItem("swp_authgear_state", state);

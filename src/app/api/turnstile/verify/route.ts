@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       success?: boolean;
       hostname?: string;
       action?: string;
-      error-codes?: string[];
+      "error-codes"?: string[];
     };
 
     if (!result.success || !response.ok) {
