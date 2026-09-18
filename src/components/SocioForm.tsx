@@ -1,11 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Zap, Loader2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
+import { getTurnstileSiteKey } from "@/lib/turnstile";
 import { Button } from "@/components/ui/button";
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (element: HTMLElement, options: Record<string, unknown>) => string;
+      reset: (widgetId: string) => void;
+      remove: (widgetId: string) => void;
+    };
+  }
+}
 
 export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
@@ -20,6 +31,90 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
   const [documentoValidado, setDocumentoValidado] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
+  const [turnstileWidgetId, setTurnstileWidgetId] = useState<string | null>(null);
+  const turnstileRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const container = turnstileRef.current;
+    if (!container) return;
+
+    const scriptId = "cloudflare-turnstile-script";
+    const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null;
+
+    const renderWidget = () => {
+      if (!window.turnstile || !container) return;
+
+      if (turnstileWidgetId) {
+        window.turnstile.remove(turnstileWidgetId);
+      }
+
+      const widgetId = window.turnstile.render(container, {
+        sitekey: getTurnstileSiteKey(),
+        action: mode === "signup" ? "socio_signup" : "socio_login",
+        theme: "light",
+        callback: (token: string) => setTurnstileToken(token),
+        "expired-callback": () => setTurnstileToken(""),
+        "error-callback": () => setTurnstileToken(""),
+      });
+
+      setTurnstileWidgetId(widgetId);
+    };
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+      script.async = true;
+      script.defer = true;
+      script.onload = renderWidget;
+      document.head.appendChild(script);
+      return () => {
+        if (turnstileWidgetId) {
+          window.turnstile?.remove(turnstileWidgetId);
+        }
+      };
+    }
+
+    if (window.turnstile) {
+      renderWidget();
+    }
+
+    return () => {
+      if (turnstileWidgetId) {
+        window.turnstile?.remove(turnstileWidgetId);
+      }
+    };
+  }, [mode, turnstileWidgetId]);
+
+  const verifyTurnstile = async () => {
+    if (!turnstileToken) {
+      setError("Completa la verificación de seguridad antes de continuar.");
+      return false;
+    }
+
+    const response = await fetch("/api/turnstile/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: turnstileToken }),
+    });
+
+    const payload = (await response.json().catch(() => ({ ok: false, error: "La verificación falló." }))) as {
+      ok?: boolean;
+      error?: string;
+    };
+
+    if (!response.ok || !payload.ok) {
+      setError(payload.error || "La verificación de seguridad falló.");
+      if (turnstileWidgetId) {
+        window.turnstile?.reset(turnstileWidgetId);
+      }
+      setTurnstileToken("");
+      return false;
+    }
+
+    return true;
+  };
 
   const validarDocumento = async () => {
     const numero = documento.trim();
@@ -97,6 +192,12 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
     setLoading(true);
 
     try {
+      const verified = await verifyTurnstile();
+      if (!verified) {
+        setLoading(false);
+        return;
+      }
+
       const supabase = getSupabase();
 
       if (mode === "signup") {
@@ -337,6 +438,10 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
             placeholder="Mínimo 8 caracteres"
           />
         </label>
+
+        <div className="rounded-lg border border-border bg-secondary/40 p-3">
+          <div ref={turnstileRef} className="flex justify-center" />
+        </div>
 
         {error && (
           <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
