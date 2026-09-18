@@ -4,13 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Zap, Loader2 } from "lucide-react";
-import {
-  createPkcePair,
-  getAuthgearConfig,
-  getAuthgearDiscovery,
-  getAuthgearSessionCookie,
-  makeAuthgearAuthorizeUrl,
-} from "@/lib/authgear";
+import { useAuthgear } from "@authgear/nextjs/client";
 import { getTurnstileSiteKey } from "@/lib/turnstile";
 import { Button } from "@/components/ui/button";
 
@@ -26,6 +20,7 @@ declare global {
 
 export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
+  const { isAuthenticated, isLoaded, signIn } = useAuthgear();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [tipoDocumento, setTipoDocumento] = useState<"dni" | "ruc">("dni");
@@ -43,11 +38,10 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
   const turnstileWidgetRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const session = getAuthgearSessionCookie();
-    if (session?.sub) {
+    if (isLoaded && isAuthenticated) {
       router.push("/socios/dashboard");
     }
-  }, [router]);
+  }, [isAuthenticated, isLoaded, router]);
 
   useEffect(() => {
     const container = turnstileRef.current;
@@ -215,44 +209,7 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
         return;
       }
 
-      const config = getAuthgearConfig();
-      if (!config) {
-        throw new Error("Authgear no está configurado. Agrega NEXT_PUBLIC_AUTHGEAR_ISSUER y NEXT_PUBLIC_AUTHGEAR_CLIENT_ID.");
-      }
-
-      const discovery = await getAuthgearDiscovery();
-      const authorizationEndpoint = discovery?.authorization_endpoint;
-
-      if (!authorizationEndpoint) {
-        throw new Error("No se pudo cargar la configuración de Authgear.");
-      }
-
-      const { verifier, challenge } = await createPkcePair();
-      const state = window.btoa(`${Date.now()}-${Math.random().toString(16).slice(2)}`)
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/g, "");
-      const nonce = window.btoa(`${Date.now()}-${Math.random().toString(16).slice(2)}`)
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/=+$/g, "");
-
-      sessionStorage.setItem("swp_authgear_pkce", verifier);
-      sessionStorage.setItem("swp_authgear_state", state);
-      sessionStorage.setItem("swp_authgear_mode", mode);
-      sessionStorage.setItem("swp_authgear_nonce", nonce);
-
-      const url = makeAuthgearAuthorizeUrl({
-        state,
-        nonce,
-        codeChallenge: challenge,
-        redirectUri: config.redirectUri,
-        mode,
-        clientId: config.clientId,
-        authorizationEndpoint,
-      });
-
-      window.location.href = url;
+      signIn({ returnTo: "/socios/dashboard" });
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
       setError(message || "No pudimos iniciar la sesión de Authgear.");
