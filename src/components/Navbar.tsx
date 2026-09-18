@@ -141,19 +141,19 @@ export default function Navbar() {
             <hr className="border-white/10" />
             {user ? (
               <Button variant="dark" size="sm" className="w-full" asChild>
-                <a href="/auth/logout">Salir ({user})</a>
+                <a href="/api/auth/logout">Salir ({user})</a>
               </Button>
             ) : (
               <>
                 <a
-                  href="/auth/login?screen_hint=signup"
+                  href="/api/auth/login?returnTo=/socios/registro"
                   onClick={() => setMobileOpen(false)}
                   className="text-sm font-light text-text-secondary transition-colors hover:text-white"
                 >
                   Crear cuenta
                 </a>
                 <Button variant="primary" size="sm" className="w-full" asChild>
-                  <a href="/auth/login">Iniciar sesión</a>
+                  <a href="/api/auth/login?returnTo=/socios/dashboard">Iniciar sesión</a>
                 </Button>
               </>
             )}
