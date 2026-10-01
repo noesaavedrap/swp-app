@@ -7,6 +7,7 @@ const footerLinks = {
   Producto: [
     { label: "SWP Pay", href: "/producto" },
     { label: "SWP Store", href: "/producto" },
+    { label: "Tiendas Shopify", href: "/shopify" },
     { label: "SWP Business", href: "/producto" },
     { label: "SWP Wallet", href: "/socios" },
     { label: "Precios", href: "/precios" },

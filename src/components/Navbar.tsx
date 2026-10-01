@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 
 const navLinks = [
   { label: "Producto", href: "/producto" },
+  { label: "Tiendas Shopify", href: "/shopify" },
   { label: "Precios", href: "/precios" },
   { label: "Clientes", href: "/clientes" },
   { label: "FAQ", href: "/faq" },
