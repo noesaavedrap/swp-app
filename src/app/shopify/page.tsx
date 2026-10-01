@@ -39,18 +39,18 @@ const steps = [
 
 const products = [
   {
-    name: "Runner One",
-    category: "Calzado urbano",
-    price: "S/ 249",
+    name: "Esencia diaria",
+    category: "Cuidado facial",
+    price: "S/ 89",
     image:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=85",
+      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=900&q=85",
   },
   {
-    name: "Tiempo clásico",
-    category: "Accesorios",
-    price: "S/ 189",
+    name: "Ritual hidratante",
+    category: "Hidratación",
+    price: "S/ 69",
     image:
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=85",
+      "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=700&q=85",
   },
 ];
 
@@ -108,7 +108,7 @@ export default function ShopifyPage() {
                 </div>
                 <div
                   role="img"
-                  aria-label="Zapatilla deportiva roja de la tienda de muestra"
+                  aria-label="Productos de cuidado personal en la tienda de muestra"
                   className="min-h-[190px] bg-cover bg-center md:min-h-[280px]"
                   style={{ backgroundImage: `url("${products[0].image}")` }}
                 />
