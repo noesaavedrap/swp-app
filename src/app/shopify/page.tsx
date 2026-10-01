@@ -58,20 +58,20 @@ export default function ShopifyPage() {
   return (
     <main className="min-h-screen overflow-x-clip bg-[#f8faf6] text-[#173326]">
       <Navbar />
-      <section className="bg-[#edf5e8] px-4 pb-12 pt-36 md:pb-16 md:pt-40 xl:px-0">
-        <div className="mx-auto grid max-w-[76rem] items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
+      <section className="bg-[#edf5e8] px-4 pb-8 pt-28 md:pb-16 md:pt-40 xl:px-0">
+        <div className="mx-auto grid max-w-[76rem] items-center gap-6 md:gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div className="max-w-xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#bfd6c3] bg-white/70 px-3 py-1.5 text-xs font-medium text-[#225a3c]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#bfd6c3] bg-white/70 px-3 py-1.5 text-[11px] font-medium text-[#225a3c] md:text-xs">
               <Sparkles className="size-3.5" aria-hidden="true" />
               Tu tienda Shopify, hecha por SWP
             </span>
-            <h1 className="mt-6 text-[42px] font-semibold leading-[1.02] md:text-6xl">
+            <h1 className="mt-4 text-4xl font-semibold leading-[1.02] md:mt-6 md:text-6xl">
               Tu marca merece una tienda hecha para vender.
             </h1>
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-[#4b6257] md:text-lg">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-[#4b6257] md:mt-5 md:text-lg">
               Diseñamos y configuramos tu tienda Shopify para que pases de la idea a un negocio online listo para crecer.
             </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
+            <div className="mt-5 flex flex-wrap items-center gap-3 md:mt-7">
               <Button variant="primary" size="lg" asChild className="bg-[#174f36] text-white hover:bg-[#103e2a]">
                 <a href="mailto:ventas@swp.finance?subject=Quiero%20mi%20tienda%20Shopify">
                   Quiero mi tienda <ArrowRight className="size-4" />
@@ -81,26 +81,26 @@ export default function ShopifyPage() {
                 Conoce el proceso
               </a>
             </div>
-            <p className="mt-5 text-xs text-[#64786c]">Diseño · Catálogo · Configuración de lanzamiento</p>
+            <p className="mt-3 text-[10px] text-[#64786c] md:mt-5 md:text-xs">Diseño · Catálogo · Configuración de lanzamiento</p>
           </div>
 
           <div className="mx-auto w-full max-w-[620px]">
             <div className="overflow-hidden rounded-lg border border-[#d7e1d5] bg-white shadow-[0_24px_60px_rgba(25,65,43,0.13)]">
-              <div className="flex h-10 items-center gap-1.5 border-b border-[#e7ece5] px-4">
+              <div className="hidden h-10 items-center gap-1.5 border-b border-[#e7ece5] px-4 sm:flex">
                 <span className="size-2 rounded-full bg-[#d8e1d7]" />
                 <span className="size-2 rounded-full bg-[#d8e1d7]" />
                 <span className="size-2 rounded-full bg-[#d8e1d7]" />
                 <span className="ml-3 rounded-sm bg-[#f2f5f1] px-3 py-1 text-[9px] text-[#87968b]">mitienda.com</span>
               </div>
-              <div className="flex items-center justify-between border-b border-[#edf0eb] px-4 py-3 md:px-6">
+              <div className="hidden items-center justify-between border-b border-[#edf0eb] px-4 py-3 sm:flex md:px-6">
                 <span className="text-[10px] font-bold tracking-[0.12em] text-[#183b2a] md:text-xs">NORTE / ESTUDIO</span>
                 <div className="hidden gap-4 text-[9px] text-[#5d6e62] sm:flex">
                   <span>Tienda</span><span>Nosotros</span><span>Contacto</span>
                 </div>
                 <ShoppingBag className="size-4 text-[#254f37]" aria-hidden="true" />
               </div>
-              <div className="grid grid-cols-[1.05fr_0.95fr]">
-                <div className="flex flex-col justify-center px-4 py-5 md:px-7 md:py-8">
+              <div className="grid grid-cols-1 sm:grid-cols-[1.05fr_0.95fr]">
+                <div className="hidden flex-col justify-center px-4 py-5 sm:flex md:px-7 md:py-8">
                   <span className="text-[8px] font-semibold uppercase tracking-[0.16em] text-[#66816c]">Nueva colección</span>
                   <h2 className="mt-2 text-xl font-medium leading-tight text-[#1d3928] md:text-3xl">Muévete a tu manera.</h2>
                   <p className="mt-2 text-[9px] leading-relaxed text-[#67786b] md:text-xs">Diseño pensado para acompañarte todos los días.</p>
@@ -109,11 +109,11 @@ export default function ShopifyPage() {
                 <div
                   role="img"
                   aria-label="Productos de cuidado personal en la tienda de muestra"
-                  className="min-h-[190px] bg-cover bg-center md:min-h-[280px]"
+                  className="min-h-[150px] bg-cover bg-center sm:min-h-[190px] md:min-h-[280px]"
                   style={{ backgroundImage: `url("${products[0].image}")` }}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3 bg-white p-3 md:gap-4 md:p-5">
+              <div className="hidden grid-cols-2 gap-3 bg-white p-3 sm:grid md:gap-4 md:p-5">
                 {products.map((product) => (
                   <article key={product.name}>
                     <div
@@ -133,7 +133,7 @@ export default function ShopifyPage() {
                 ))}
               </div>
             </div>
-            <div className="mt-3 flex items-center justify-between px-1 text-[10px] text-[#65766a]">
+            <div className="mt-3 hidden items-center justify-between px-1 text-[10px] text-[#65766a] sm:flex">
               <span>Una vista de ejemplo de tu futura tienda</span>
               <span className="inline-flex items-center gap-1.5"><span className="size-1.5 rounded-full bg-[#5b9c69]" /> Lista para personalizar</span>
             </div>
