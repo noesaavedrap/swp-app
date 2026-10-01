@@ -28,10 +28,10 @@ export default function AdminPanel({ user }: AdminPanelProps) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+        <div className="rounded-lg border border-white/10 bg-[#0d1117] p-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-brand to-brand-light">
-              <Zap className="size-5 text-white" strokeWidth={2.5} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-brand">
+              <Zap className="size-5 text-[#101910]" strokeWidth={2.5} />
             </div>
             <div>
               <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
@@ -53,7 +53,7 @@ export default function AdminPanel({ user }: AdminPanelProps) {
           )}
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+        <div className="rounded-lg border border-white/10 bg-[#0d1117] p-6">
           <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
             Authgear Subject ID
           </p>
@@ -62,7 +62,7 @@ export default function AdminPanel({ user }: AdminPanelProps) {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+        <div className="rounded-lg border border-white/10 bg-[#0d1117] p-6">
           <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
             Estado
           </p>

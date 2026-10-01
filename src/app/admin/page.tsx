@@ -20,12 +20,12 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-secondary">
-      <header className="sticky top-0 z-40 border-b border-border bg-white/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0b0f14]">
         <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <a href="/" className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-brand to-brand-light">
-                <Zap className="size-5 text-white" strokeWidth={2.5} />
+              <div className="flex h-9 w-9 items-center justify-center rounded-md bg-brand">
+                <Zap className="size-5 text-[#101910]" strokeWidth={2.5} />
               </div>
               <span className="text-sm font-semibold text-text-primary tracking-tight">
                 SWP Admin
@@ -76,12 +76,12 @@ export default async function AdminPage() {
           <AdminTransaccionesTable />
         </div>
 
-        <div className="mt-8 rounded-2xl border border-border bg-white p-6 shadow-card">
+        <div className="mt-8 rounded-lg border border-white/10 bg-[#0d1117] p-6">
           <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide">
             Información de sesión
           </h2>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
-            <div className="rounded-xl bg-secondary p-4">
+            <div className="rounded-md border border-white/10 bg-white/[0.02] p-4">
               <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
                 Email
               </p>
@@ -89,7 +89,7 @@ export default async function AdminPage() {
                 {user.email}
               </p>
             </div>
-            <div className="rounded-xl bg-secondary p-4">
+            <div className="rounded-md border border-white/10 bg-white/[0.02] p-4">
               <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
                 Authgear Subject
               </p>
@@ -97,7 +97,7 @@ export default async function AdminPage() {
                 {user.sub}
               </p>
             </div>
-            <div className="rounded-xl bg-secondary p-4">
+            <div className="rounded-md border border-white/10 bg-white/[0.02] p-4">
               <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
                 Estado
               </p>

@@ -101,7 +101,7 @@ export default function AdminTransaccionesTable() {
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-white shadow-card">
+    <div className="rounded-lg border border-white/10 bg-[#0d1117]">
       <div className="flex items-center justify-between border-b border-border px-6 py-4">
         <div className="flex items-center gap-2">
           <Receipt className="size-4 text-text-tertiary" />

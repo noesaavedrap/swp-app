@@ -199,7 +199,7 @@ export default function AdminStatsSection() {
         {cards.map((card) => (
           <div
             key={card.label}
-            className="rounded-2xl border border-border bg-white p-6 shadow-card"
+            className="rounded-lg border border-white/10 bg-[#0d1117] p-6"
           >
             <div className="flex items-center justify-between">
               <p className="text-[11px] font-light uppercase tracking-[0.18em] text-text-tertiary">
@@ -222,7 +222,7 @@ export default function AdminStatsSection() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+        <div className="rounded-lg border border-white/10 bg-[#0d1117] p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-light uppercase tracking-[0.18em] text-text-tertiary">
@@ -265,7 +265,7 @@ export default function AdminStatsSection() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+        <div className="rounded-lg border border-white/10 bg-[#0d1117] p-6">
           <p className="text-[11px] font-light uppercase tracking-[0.18em] text-text-tertiary">
             Actividad reciente
           </p>

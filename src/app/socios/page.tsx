@@ -4,17 +4,17 @@ import { Button } from "@/components/ui/button";
 
 export default function SociosPage() {
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#d1fae5_0%,#FFFFFF_100%)]">
+    <div className="min-h-screen bg-[#eff4ee] bg-[linear-gradient(to_right,rgba(23,51,38,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(23,51,38,0.035)_1px,transparent_1px)] bg-[size:32px_32px]">
       <header className="mx-auto flex max-w-[76rem] items-center justify-between px-4 py-6 xl:px-0">
         <a href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-brand to-brand-light">
-            <Zap className="size-5 text-white" strokeWidth={2.5} />
+          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-brand">
+            <Zap className="size-5 text-[#102317]" strokeWidth={2.5} />
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-sm font-semibold text-text-primary tracking-tight">
+            <span className="text-sm font-semibold text-[#173326] tracking-tight">
               SWP
             </span>
-            <span className="text-[10px] font-light text-text-tertiary tracking-wide uppercase">
+            <span className="text-[10px] font-light text-[#64786c] tracking-wide uppercase">
               Finance
             </span>
           </div>
@@ -31,20 +31,20 @@ export default function SociosPage() {
 
       <main className="mx-auto max-w-[76rem] px-4 pt-20 pb-28 text-center xl:px-0">
         <div className="mx-auto max-w-[640px]">
-          <div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/60 px-3 py-1 text-sm font-light text-text-secondary backdrop-blur-[3px]">
+          <div className="inline-flex items-center gap-2 rounded-md border border-[#cfddcf] bg-white px-3 py-1 text-sm font-medium text-[#41604a]">
             <span className="size-1.5 rounded-full bg-brand animate-pulse" />
             Área de Socios
           </div>
 
-          <h1 className="mt-6 text-[40px] leading-[1.05] font-light text-text-primary -tracking-[1px] md:text-[56px]">
+          <h1 className="mt-6 text-[40px] leading-[1.05] font-semibold text-[#173326] md:text-[56px]">
             Tu espacio como{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-brand to-brand-light">
+            <span className="text-[#327746]">
               socio
             </span>{" "}
             de SWP
           </h1>
 
-          <p className="mt-5 text-md font-light text-text-secondary leading-relaxed">
+          <p className="mt-5 text-md font-light text-[#53695a] leading-relaxed">
             Gestiona tus finanzas, revisa tus movimientos y mantén control total
             de tu actividad como socio dentro de la plataforma SWP.
           </p>
@@ -75,12 +75,12 @@ export default function SociosPage() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="rounded-xl border border-border bg-white p-5 shadow-sm"
+                className="rounded-lg border border-[#d7e1d6] bg-white p-5"
               >
-                <h3 className="text-sm font-medium text-text-primary">
+                <h3 className="text-sm font-medium text-[#173326]">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm font-light text-text-secondary leading-relaxed">
+                <p className="mt-2 text-sm font-light text-[#53695a] leading-relaxed">
                   {item.desc}
                 </p>
               </div>

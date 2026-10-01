@@ -218,7 +218,7 @@ export default function SocioForm({ mode }: { mode: "login" | "signup" }) {
   }; 
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-2xl border border-border bg-white p-8 shadow-card">
+    <div className="mx-auto w-full max-w-md rounded-lg border border-white/10 bg-[#0d1117] p-8">
       <div className="mb-6 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-brand to-brand-light">
           <Zap className="size-5 text-white" strokeWidth={2.5} />
