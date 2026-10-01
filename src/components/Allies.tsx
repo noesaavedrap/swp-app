@@ -56,25 +56,23 @@ export default function Allies() {
             transition={reducedMotion ? undefined : { duration: 26, ease: "linear", repeat: Infinity }}
           >
             {items.map((ally, index) => (
-              <motion.div
+              <div
                 key={`${ally.name}-${index}`}
-                whileHover={reducedMotion ? undefined : { y: -6, scale: 1.02 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
-                className="group flex h-28 w-56 flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-md transition-colors hover:border-brand/30 hover:bg-brand/10"
+                className="group flex h-28 w-56 flex-col justify-between rounded-md border border-white/10 bg-[#0d1117] p-5 transition-colors hover:border-brand/30 hover:bg-white/[0.04]"
               >
                 <div className="flex items-center justify-between">
                   <img
                     src={ally.logo}
                     alt={`${ally.name} logo`}
-                    className="h-12 w-36 object-contain object-left transition duration-300 group-hover:scale-105"
+                    className="h-12 w-36 object-contain object-left"
                   />
-                  <span className="size-2 rounded-full bg-brand opacity-60 transition-transform duration-300 group-hover:scale-150" />
+                  <span className="size-2 rounded-full bg-brand opacity-70" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-white">{ally.name}</p>
                   <p className="mt-1 text-[11px] font-light text-white/45">{ally.category}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </motion.div>
         </div>

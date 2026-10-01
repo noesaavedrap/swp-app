@@ -54,7 +54,7 @@ const steps = [
 export default function AnimateUIShowcase() {
   return (
     <section className="relative isolate w-full overflow-hidden bg-[#08080c] py-20 md:py-24 lg:py-32">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.15),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.12),transparent_30%)]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:40px_40px]" />
       <div className="mx-auto w-full max-w-[76rem] px-5 sm:px-6 lg:px-8 xl:px-0">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -63,7 +63,7 @@ export default function AnimateUIShowcase() {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl text-center"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-brand-700 shadow-sm">
+          <div className="inline-flex items-center gap-2 rounded-md border border-brand-200 bg-white px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-brand-700">
             <Sparkles className="size-3.5" />
             animate-ui style
           </div>
@@ -85,11 +85,11 @@ export default function AnimateUIShowcase() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-30px" }}
                 transition={{ duration: 0.45, delay: index * 0.08 }}
-                className="group relative overflow-hidden rounded-[28px] border border-white bg-white p-5 shadow-[0_24px_80px_-50px_rgba(15,23,42,0.35)] md:p-6"
+                className="group relative overflow-hidden rounded-lg border border-slate-200 bg-white p-5 md:p-6"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.accent} opacity-90`} />
                 <div className="relative z-10 flex h-full flex-col">
-                  <div className="flex size-12 items-center justify-center rounded-2xl border border-brand-100 bg-white/90 text-brand shadow-sm">
+                  <div className="flex size-10 items-center justify-center rounded-md border border-brand-100 bg-white text-brand">
                     <Icon className="size-5" />
                   </div>
                   <h3 className="mt-5 text-xl font-light text-slate-950">{card.title}</h3>
@@ -113,7 +113,7 @@ export default function AnimateUIShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.55 }}
-          className="mt-14 rounded-[32px] border border-brand-100 bg-white p-6 shadow-[0_30px_100px_-40px_rgba(5,150,105,0.38)] md:p-8"
+          className="mt-14 border-y border-brand-200 bg-white py-6 md:py-8"
         >
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
@@ -129,7 +129,7 @@ export default function AnimateUIShowcase() {
               </p>
             </div>
 
-            <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-4 shadow-lg">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-center justify-between border-b border-slate-200 pb-3">
                 <div>
                   <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Dashboard</p>
@@ -139,7 +139,7 @@ export default function AnimateUIShowcase() {
               </div>
 
               <div className="mt-4 space-y-4">
-                <div className="rounded-2xl bg-slate-950 p-3">
+                <div className="rounded-md bg-slate-950 p-3">
                   <div className="flex items-center justify-between text-sm text-slate-300">
                     <span>Ingresos</span>
                     <span className="font-medium text-brand-700">+28%</span>
@@ -148,7 +148,7 @@ export default function AnimateUIShowcase() {
                     {[35, 52, 46, 70, 62, 84, 95].map((height, idx) => (
                       <span
                         key={idx}
-                        className="flex-1 rounded-t-xl bg-gradient-to-t from-brand-600 to-brand-300"
+                        className="flex-1 rounded-t-sm bg-brand-600"
                         style={{ height: `${height}%` }}
                       />
                     ))}
@@ -156,14 +156,14 @@ export default function AnimateUIShowcase() {
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                  <div className="rounded-md border border-slate-200 bg-white p-3">
                     <div className="flex items-center justify-between text-xs text-slate-500">
                       <span>Pagos</span>
                       <BadgeCheck className="size-3.5 text-brand" />
                     </div>
                     <p className="mt-2 text-2xl font-light tracking-[-0.05em] text-slate-950">12.4k</p>
                   </div>
-                  <div className="rounded-2xl border border-slate-200 bg-white p-3">
+                  <div className="rounded-md border border-slate-200 bg-white p-3">
                     <div className="flex items-center justify-between text-xs text-slate-500">
                       <span>Conversiones</span>
                       <Braces className="size-3.5 text-brand" />
@@ -184,7 +184,7 @@ export default function AnimateUIShowcase() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm"
+              className="rounded-lg border border-slate-200 bg-white p-5"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium uppercase tracking-[0.16em] text-brand-700">{step.number}</span>

@@ -66,7 +66,7 @@ export default function Hero() {
               </span>
               <div className="flex flex-wrap gap-2.5">
                 {trustedTools.map((tool) => (
-                  <span key={tool} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/70 backdrop-blur-sm">
+                  <span key={tool} className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-white/70">
                     {tool}
                   </span>
                 ))}
