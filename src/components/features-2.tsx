@@ -22,7 +22,7 @@ export default function Features() {
                                 <div className="mask-b-from-75% absolute inset-0">
                                     <div className="bg-background h-full rounded-xl border"></div>
                                 </div>
-                                <div className="bg-card ring-foreground/6.5 absolute bottom-0 right-0 aspect-square w-3/5 translate-x-8 translate-y-16 rounded-xl shadow-xl shadow-black/5 ring" />
+                                <div className="bg-card ring-foreground/10 absolute bottom-0 right-0 aspect-square w-3/5 rounded-md border ring-1" />
                             </div>
                         </div>
                     </Card>
@@ -36,7 +36,7 @@ export default function Features() {
                         <div className="mask-x-from-65% relative mt-6 pt-2">
                             <div
                                 aria-hidden
-                                className="bg-linear-to-b from-card to background ring-foreground/6.5 relative h-72 rounded-xl shadow-xl ring"
+                                className="bg-linear-to-b from-card to-background ring-foreground/10 relative h-72 rounded-md border ring-1"
                             ></div>
                         </div>
                     </Card>
@@ -56,7 +56,7 @@ export default function Features() {
                                     <div className="bg-foreground/10 size-1 rounded-full"></div>
                                 </div>
 
-                                <div className="bg-card ring-foreground/6.5 mx-6 mt-auto aspect-video rounded-xl shadow-xl ring" />
+                                <div className="bg-card ring-foreground/10 mx-6 mt-auto aspect-video rounded-md border ring-1" />
                             </div>
                         </div>
                     </Card>

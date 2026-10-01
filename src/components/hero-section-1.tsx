@@ -67,12 +67,10 @@ export default function HeroSection() {
                                 </div>
                             </div>
 
-                            <div className="relative mt-8 overflow-hidden p-6 max-sm:-mr-56 sm:mt-16">
-                                <div className="rounded-4xl mask-t-from-25% mask-t-to-65% bg-linear-to-b absolute inset-0 border to-zinc-600"></div>
-                                <div className="bg-background ring-foreground/6.5 before:mask-radial-at-top-left before:mask-radial-from-65% before:mask-radial-[100%_60%] before:ring-foreground before:border-foreground/10 relative rounded-2xl p-2 shadow-xl shadow-black/50 ring before:absolute before:-inset-px before:z-10 before:size-56 before:rounded-tl-2xl before:border-l before:border-t">
-                                    <div className="bg-foreground/2 z-1 absolute inset-0 rounded-2xl"></div>
+                            <div className="relative mt-8 overflow-hidden border-y border-foreground/10 py-6 max-sm:-mr-56 sm:mt-16">
+                                <div className="bg-background ring-foreground/10 relative border ring-1">
                                     <Image
-                                        className="bg-background aspect-15/8 relative rounded-2xl"
+                                        className="bg-background aspect-15/8 relative"
                                         src="/mail2.png"
                                         alt="app screen"
                                         width="2700"
@@ -95,7 +93,7 @@ export default function HeroSection() {
                                 <ChevronRight className="ml-1 inline-block size-3" />
                             </Link>
                         </div>
-                        <div className="group-hover:blur-xs **:fill-foreground mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-x-12 gap-y-8 transition-all duration-500 group-hover:opacity-50 sm:gap-x-16 sm:gap-y-14 md:grid-cols-4">
+                        <div className="**:fill-foreground mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-x-12 gap-y-8 sm:gap-x-16 sm:gap-y-14 md:grid-cols-4">
                             <div className="flex items-center">
                                 <Bolt className="mx-auto h-5 w-full" />
                             </div>

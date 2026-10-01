@@ -37,7 +37,7 @@ export default function Testimonials() {
                                     <Play
                                         fill="white"
                                         stroke="white"
-                                        className="drop-shadow-black/25 translate-x-px drop-shadow-md"
+                                        className="translate-x-px"
                                     />
                                 </Button>
                             </div>
