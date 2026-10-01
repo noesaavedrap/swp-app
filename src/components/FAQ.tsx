@@ -52,7 +52,7 @@ export default function FAQ() {
           {faqs.map((faq, i) => {
             const isOpen = openIndex === i;
             return (
-              <div key={i} className="rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-md">
+              <div key={i} className="border-b border-white/15">
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
                   className="flex w-full items-center justify-between px-5 py-6 text-start text-lg font-light text-white"
@@ -74,7 +74,7 @@ export default function FAQ() {
                   )}
                 >
                   <div className="overflow-hidden">
-                    <p className="rounded-xl bg-white/[0.035] px-5 py-6 font-light text-white/60">
+                    <p className="px-5 pb-6 font-light leading-relaxed text-white/60">
                       {faq.answer}
                     </p>
                   </div>

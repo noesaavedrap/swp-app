@@ -102,15 +102,15 @@ export default function Pricing() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-md ${
+              className={`relative flex flex-col rounded-lg border border-white/10 bg-[#0d1117] p-5 ${
                 plan.featured
-                  ? "border-2 border-brand/40 bg-[linear-gradient(180deg,rgba(212,255,0,0.12),rgba(255,255,255,0.035))] shadow-[0_24px_70px_rgba(0,0,0,0.28)]"
+                ? "border-brand/60 bg-[#111912]"
                   : ""
               }`}
             >
               {plan.featured && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-brand-100 text-brand-700 text-xs rounded-full px-2.5 py-1">
+                  <span className="bg-brand-100 text-brand-700 text-xs rounded-md px-2.5 py-1">
                     Más Popular
                   </span>
                 </div>

@@ -98,7 +98,7 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="col-span-6 flex flex-col items-start justify-between rounded-xl border border-white/10 bg-white/[0.04] p-3 shadow-[0_18px_50px_rgba(0,0,0,0.18)] backdrop-blur-md md:col-span-3 lg:col-span-2 xl:rounded-2xl"
+              className="col-span-6 flex flex-col items-start justify-between rounded-lg border border-white/10 bg-[#0d1117] p-4 md:col-span-3 lg:col-span-2"
             >
               <figure className="flex-1">
                 <blockquote className="text-md font-light text-white/85 leading-relaxed">
@@ -106,7 +106,7 @@ export default function Testimonials() {
                 </blockquote>
               </figure>
 
-              <figcaption className="mt-5 flex w-full items-center gap-3 rounded-lg border border-white/10 bg-white/[0.06] px-5 py-3">
+              <figcaption className="mt-5 flex w-full items-center gap-3 border-t border-white/10 px-1 py-3">
                 <div className="bg-brand-100 text-brand-700 rounded-full size-10 flex items-center justify-center shrink-0">
                   <span className="text-sm font-medium">{t.initials}</span>
                 </div>
