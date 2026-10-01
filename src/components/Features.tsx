@@ -12,7 +12,7 @@ import {
   Store,
   Wallet,
 } from "lucide-react";
-import { useMemo, useState, type CSSProperties, type MouseEvent } from "react";
+import { useMemo, useState } from "react";
 
 import { SectionHeading } from "@/components/SectionHeading";
 
@@ -102,7 +102,7 @@ export default function Features() {
 
         <div className="mt-9 flex flex-col items-center gap-4">
           <div
-            className="mx-auto flex w-fit max-w-full overflow-x-auto rounded-xl border border-white/10 bg-white/5 p-1 shadow-sm backdrop-blur-sm"
+            className="mx-auto flex w-fit max-w-full overflow-x-auto rounded-lg border border-white/10 bg-white/[0.03] p-1"
             role="tablist"
             aria-label="Filtrar productos"
           >
@@ -118,7 +118,7 @@ export default function Features() {
                   onClick={() => setActiveCategory(category)}
                   className={`whitespace-nowrap rounded-lg px-3.5 py-2 text-xs font-medium transition-all duration-200 md:px-4 ${
                     isActive
-                      ? "bg-brand text-[#09090b] shadow-sm"
+                      ? "bg-brand text-[#09090b]"
                       : "text-white/70 hover:bg-white/5 hover:text-white"
                   }`}
                 >
@@ -136,7 +136,7 @@ export default function Features() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 backdrop-blur-sm"
+                className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-1.5"
               >
                 <span className="text-brand">{stat.value}</span> {stat.label}
               </div>
@@ -165,39 +165,20 @@ export default function Features() {
 
 function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
   const Icon = feature.icon;
-  const [spotlight, setSpotlight] = useState({ x: 50, y: 50 });
-
-  const handleMove = (event: MouseEvent<HTMLElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    setSpotlight({
-      x: ((event.clientX - bounds.left) / bounds.width) * 100,
-      y: ((event.clientY - bounds.top) / bounds.height) * 100,
-    });
-  };
-
-  const spotlightStyle = {
-    "--spotlight-x": `${spotlight.x}%`,
-    "--spotlight-y": `${spotlight.y}%`,
-  } as CSSProperties;
 
   return (
     <motion.article
       id={feature.visual}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -8, scale: 1.01 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.55, delay: index * 0.08, ease: "easeOut" }}
-      onMouseMove={handleMove}
-      style={spotlightStyle}
-      className={`group relative min-h-[370px] scroll-mt-28 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-[0_20px_40px_rgba(0,0,0,0.25)] backdrop-blur-md transition-all duration-500 hover:border-brand/30 hover:shadow-[0_24px_70px_rgba(0,0,0,0.34)] md:p-7 ${feature.span}`}
+      className={`group relative min-h-[370px] scroll-mt-28 overflow-hidden rounded-lg border border-white/10 bg-[#0b0e12] p-5 transition-colors duration-200 hover:border-brand/35 md:p-7 ${feature.span}`}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 [background:radial-gradient(340px_circle_at_var(--spotlight-x)_var(--spotlight-y),rgba(212,255,0,0.16),transparent_70%)]" />
-
       <div className="relative z-10 flex h-full flex-col justify-between gap-8">
         <div>
           <div className="flex items-start justify-between gap-4">
-            <div className="flex size-12 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand transition-transform duration-500 group-hover:scale-105">
+            <div className="flex size-10 items-center justify-center rounded-md border border-brand/20 bg-brand/10 text-brand">
               <Icon className="size-6" />
             </div>
             <ArrowUpRight className="size-5 text-white/45 transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-brand" />
@@ -214,7 +195,7 @@ function FeatureCard({ feature, index }: { feature: Feature; index: number }) {
             {feature.chips.map((chip) => (
               <span
                 key={chip}
-                className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/75 shadow-sm backdrop-blur-sm"
+                className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-white/75"
               >
                 {chip}
               </span>
@@ -233,7 +214,7 @@ function ProductVisual({ type, tone }: { type: VisualType; tone: string }) {
     <div
       className={`relative flex h-36 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-linear-to-br ${tone}`}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(212,255,0,0.2)_0,transparent_34%),linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:auto,26px_26px,26px_26px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:26px_26px]" />
 
       {type === "payments" && <PaymentVisual />}
       {type === "store" && <StoreVisual />}
@@ -245,7 +226,7 @@ function ProductVisual({ type, tone }: { type: VisualType; tone: string }) {
 
 function PaymentVisual() {
   return (
-    <div className="relative w-[78%] rounded-xl border border-white/10 bg-[#111820]/90 p-4 shadow-lg backdrop-blur">
+    <div className="relative w-[78%] rounded-md border border-white/10 bg-[#111820] p-4">
       <div className="flex items-center justify-between">
         <span className="text-xs text-white/55">Cobros hoy</span>
         <ShieldCheck className="size-4 text-brand" />
@@ -260,7 +241,7 @@ function PaymentVisual() {
 
 function StoreVisual() {
   return (
-    <div className="relative w-[82%] rounded-xl border border-white/10 bg-[#111820]/90 p-3 shadow-lg backdrop-blur">
+    <div className="relative w-[82%] rounded-md border border-white/10 bg-[#111820] p-3">
       <div className="flex items-center gap-2">
         <div className="flex size-8 items-center justify-center rounded-lg bg-brand/15 text-brand">
           <ShoppingBag className="size-4" />
@@ -282,7 +263,7 @@ function StoreVisual() {
 
 function AnalyticsVisual() {
   return (
-    <div className="flex w-[78%] items-end justify-between gap-2 rounded-xl border border-border bg-white px-5 pb-4 pt-5 shadow-lg">
+    <div className="flex w-[78%] items-end justify-between gap-2 rounded-md border border-border bg-white px-5 pb-4 pt-5">
       <div className="flex h-20 items-end gap-2">
         <span className="h-7 w-4 rounded-t bg-brand-200" />
         <span className="h-12 w-4 rounded-t bg-brand-300" />
@@ -301,7 +282,7 @@ function AnalyticsVisual() {
 
 function WalletVisual() {
   return (
-    <div className="relative w-[76%] rounded-xl bg-foreground p-4 shadow-lg">
+    <div className="relative w-[76%] rounded-md bg-foreground p-4">
       <div className="flex items-center justify-between text-white">
         <span className="text-xs text-white/60">Balance total</span>
         <Wallet className="size-4 text-brand-light" />

@@ -31,7 +31,7 @@ const rows = [
 
 function PayMockup() {
   return (
-    <div className="w-full max-w-sm rounded-xl border border-white/10 bg-white/[0.06] p-6 shadow-[0_20px_55px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+    <div className="w-full max-w-sm rounded-lg border border-white/10 bg-[#11151b] p-6">
       <div className="flex items-center gap-3 mb-4">
         <div className="flex size-10 items-center justify-center rounded-lg bg-brand-100 text-brand">
           <CreditCard className="size-5" />
@@ -60,7 +60,7 @@ function StoreMockup() {
   ];
 
   return (
-    <div className="w-full max-w-sm rounded-xl border border-white/10 bg-white/[0.06] p-5 shadow-[0_20px_55px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+    <div className="w-full max-w-sm rounded-lg border border-white/10 bg-[#11151b] p-5">
       <div className="flex items-center gap-3 mb-4">
         <div className="flex size-10 items-center justify-center rounded-lg bg-brand-100 text-brand">
           <Store className="size-5" />
@@ -90,7 +90,7 @@ function StoreMockup() {
 
 function ShopifyMockup() {
   return (
-    <div className="w-full max-w-sm overflow-hidden rounded-xl border border-white/10 bg-[#f8f7f3] text-[#18231f] shadow-[0_20px_55px_rgba(0,0,0,0.25)]">
+    <div className="w-full max-w-sm overflow-hidden rounded-lg border border-white/10 bg-[#f8f7f3] text-[#18231f]">
       <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
         <span className="text-[10px] font-semibold uppercase tracking-[0.14em]">Tu marca</span>
         <span className="text-[10px] text-black/55">Tienda online</span>
@@ -171,7 +171,7 @@ export default function Showcase() {
               </div>
 
               <div className="flex w-full flex-1 justify-center">
-                <div className="flex w-full max-w-md items-center justify-center rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(212,255,0,0.08)_0%,rgba(14,17,23,0.95)_100%)] p-8">
+                <div className="flex w-full max-w-md items-center justify-center border-t border-white/10 pt-8">
                   {row.mockup === "pay" ? (
                     <PayMockup />
                   ) : row.mockup === "shopify" ? (

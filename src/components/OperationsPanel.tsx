@@ -41,7 +41,7 @@ export default function OperationsPanel() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.045] shadow-[0_24px_70px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+        <div className="overflow-hidden rounded-lg border border-white/10 bg-[#0d1117]">
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 md:px-6">
             <div>
               <p className="text-sm font-medium text-white">Resumen de operación</p>

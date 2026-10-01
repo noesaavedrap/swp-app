@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Play, ShieldCheck, Sparkles, TrendingUp, X } from "lucide-react";
 
@@ -16,32 +16,13 @@ const metrics = [
 
 export default function Hero() {
   const [previewOpen, setPreviewOpen] = useState(false);
-  const heroRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const node = heroRef.current;
-    if (!node) return;
-
-    const handlePointer = (event: MouseEvent) => {
-      const rect = node.getBoundingClientRect();
-      const x = ((event.clientX - rect.left) / rect.width) * 100;
-      const y = ((event.clientY - rect.top) / rect.height) * 100;
-      node.style.setProperty("--mouse-x", `${x}%`);
-      node.style.setProperty("--mouse-y", `${y}%`);
-    };
-
-    node.addEventListener("pointermove", handlePointer);
-    return () => node.removeEventListener("pointermove", handlePointer);
-  }, []);
 
   return (
-    <section ref={heroRef} className="swp-hero pt-28 md:pt-32 lg:pt-36">
-      <div className="swp-spotlight" />
-
+    <section className="swp-hero pt-28 md:pt-32 lg:pt-36">
       <div className="relative mx-auto max-w-[76rem] px-4 xl:px-0">
         <div className="grid items-center gap-10 pb-16 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:pb-20">
           <div className="max-w-[720px]">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-brand shadow-[0_0_24px_rgba(212,255,0,0.12)]">
+              <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-brand/20 bg-brand/10 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-brand">
               <Sparkles className="size-3.5" />
               Plataforma financiera
             </div>
@@ -96,7 +77,7 @@ export default function Hero() {
               {metrics.map((metric) => (
                 <div
                   key={metric.label}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.14)] backdrop-blur-sm"
+                  className="rounded-lg border border-white/10 bg-white/[0.03] p-4"
                 >
                   <strong className="block text-2xl font-semibold tracking-tight text-white">
                     {metric.value}
@@ -108,7 +89,7 @@ export default function Hero() {
           </div>
 
           <div className="relative">
-            <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#0d1117]/85 p-4 shadow-[0_30px_80px_rgba(0,0,0,0.34)] backdrop-blur-xl">
+            <div className="relative overflow-hidden rounded-lg border border-white/10 bg-[#0d1117] p-4">
               <div className="mb-4 flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
@@ -158,12 +139,12 @@ export default function Hero() {
 
       {previewOpen && (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#09090b]/75 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-[#09090b]/90 p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="platform-preview-title"
         >
-          <div className="relative w-full max-w-4xl overflow-hidden rounded-2xl border border-white/10 bg-[#0c1017] p-3 shadow-2xl md:p-5">
+          <div className="relative w-full max-w-4xl overflow-hidden rounded-lg border border-white/10 bg-[#0c1017] p-3 md:p-5">
             <button
               type="button"
               onClick={() => setPreviewOpen(false)}
@@ -180,7 +161,7 @@ export default function Hero() {
                 Todo el control, en una sola vista.
               </h2>
             </div>
-            <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#0d1117]/85 p-4 shadow-[0_25px_60px_rgba(0,0,0,0.28)]">
+            <div className="relative overflow-hidden rounded-lg border border-white/10 bg-[#0d1117] p-4">
               <div className="mb-4 flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
