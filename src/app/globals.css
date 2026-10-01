@@ -87,10 +87,7 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: "Inter", sans-serif;
-    background:
-      radial-gradient(circle at 50% -10%, rgba(212,255,0,0.1), transparent 30%),
-      radial-gradient(circle at 85% 45%, rgba(46, 211, 183, 0.04), transparent 26%),
-      var(--swp-ink);
+    background: linear-gradient(180deg, #0b0e12 0%, var(--swp-ink) 48%, #0a0d10 100%);
   }
   body::before {
     content: "";
@@ -135,11 +132,11 @@
     position: relative;
     min-height: 100vh;
     overflow: hidden;
-    background:
-      radial-gradient(circle at 15% 20%, rgba(212, 255, 0, 0.12), transparent 28%),
-      radial-gradient(circle at 80% 15%, rgba(255,255,255,0.04), transparent 26%),
-      linear-gradient(180deg, rgba(8,8,12,0.78) 0%, rgba(10,13,18,0.64) 45%, rgba(10,13,18,0.72) 100%);
-    backdrop-filter: blur(2px);
+    background-color: #08080c;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
   }
 
   .swp-section {
@@ -160,16 +157,7 @@
   }
 
   .swp-section::after {
-    content: "";
-    position: absolute;
-    width: 28rem;
-    height: 28rem;
-    right: -14rem;
-    top: 10%;
-    border: 1px solid rgba(212,255,0,0.09);
-    border-radius: 50%;
-    box-shadow: 0 0 0 4rem rgba(212,255,0,0.025), 0 0 0 8rem rgba(212,255,0,0.015);
-    pointer-events: none;
+    content: none;
   }
 
   .swp-kicker {
@@ -193,19 +181,13 @@
 
   .swp-video-marquee {
     position: relative;
-    perspective: 1100px;
     overflow: hidden;
     padding: 0.5rem 0 1.5rem;
     mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
   }
 
   .swp-video-marquee::before {
-    content: "";
-    position: absolute;
-    inset: 15% 8% 0;
-    background: radial-gradient(ellipse at center, rgba(212,255,0,0.12), transparent 64%);
-    filter: blur(24px);
-    pointer-events: none;
+    content: none;
   }
 
   .swp-video-marquee::after {
@@ -223,33 +205,16 @@
     display: flex;
     width: max-content;
     gap: 1rem;
-    transform-style: preserve-3d;
     animation: swp-marquee 30s linear infinite;
-    will-change: transform;
   }
 
   .swp-video-track article {
     position: relative;
-    transform: rotateY(-3deg) translateZ(0);
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    transition: transform 350ms ease, border-color 350ms ease, box-shadow 350ms ease;
-    box-shadow: 0 18px 45px rgba(0,0,0,0.24);
-  }
-
-  .swp-video-track article:nth-child(3n + 2) {
-    transform: rotateY(0deg) translateZ(20px);
-  }
-
-  .swp-video-track article:nth-child(3n) {
-    transform: rotateY(3deg) translateZ(0);
+    transition: border-color 250ms ease;
   }
 
   .swp-video-track article:hover {
-    z-index: 2;
     border-color: rgba(212, 255, 0, 0.45);
-    transform: rotateY(0deg) translateZ(34px) scale(1.025);
-    box-shadow: 0 28px 70px rgba(0,0,0,0.38), 0 0 28px rgba(212,255,0,0.1);
   }
 
   .swp-video-marquee:hover .swp-video-track,
@@ -258,9 +223,8 @@
   }
 
   @keyframes swp-marquee {
-    0% { transform: translateX(0) rotateY(2deg); }
-    45% { transform: translateX(calc(-25% - 0.25rem)) rotateY(-2deg); }
-    100% { transform: translateX(calc(-50% - 0.5rem)) rotateY(2deg); }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-50% - 0.5rem)); }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -268,16 +232,10 @@
       animation: none;
     }
 
-    .swp-video-track article,
-    .swp-video-track article:nth-child(3n + 2),
-    .swp-video-track article:nth-child(3n) {
-      transform: none;
-    }
   }
 
   @media (max-width: 640px) {
     .swp-video-marquee {
-      perspective: 700px;
       padding-top: 0.25rem;
       padding-bottom: 1rem;
     }
@@ -286,24 +244,6 @@
       gap: 0.75rem;
     }
 
-    .swp-video-track article,
-    .swp-video-track article:nth-child(3n + 2),
-    .swp-video-track article:nth-child(3n) {
-      transform: rotateY(-2deg) translateZ(0);
-    }
-
-    .swp-video-track article:nth-child(3n + 2) {
-      transform: rotateY(0deg) translateZ(8px);
-    }
-
-    .swp-video-track article:nth-child(3n) {
-      transform: rotateY(2deg) translateZ(0);
-    }
-
-    .swp-video-marquee::before {
-      inset: 18% 5% 0;
-      opacity: 0.45;
-    }
   }
 
   .swp-spotlight {

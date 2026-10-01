@@ -4,19 +4,16 @@ import { Button } from "@/components/ui/button";
 
 export default function CTA() {
   return (
-    <section className="swp-section px-4 py-10 md:py-14 lg:py-28 xl:px-0">
-      <div className="relative mx-auto max-w-[76rem] overflow-hidden rounded-3xl border border-brand/20 bg-[radial-gradient(circle_at_50%_0%,rgba(212,255,0,0.18),transparent_42%),linear-gradient(135deg,rgba(18,25,25,0.9),rgba(9,12,16,0.82))] px-8 py-16 text-center shadow-[0_30px_90px_rgba(0,0,0,0.28)] md:rounded-[28px] md:py-20">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:44px_44px] opacity-40 [mask-image:radial-gradient(ellipse_at_center,black,transparent_72%)]" />
-
-        <div className="relative z-10">
+    <section className="swp-section border-y border-white/10 bg-[#0d1213] px-4 py-12 md:py-16 lg:py-20 xl:px-0">
+      <div className="mx-auto grid max-w-[76rem] gap-8 border-l-2 border-brand pl-5 md:grid-cols-[1fr_auto] md:items-center md:gap-12 md:pl-8">
           <span className="swp-kicker">El siguiente movimiento</span>
-          <h2 className="mt-4 text-[32px] md:text-[44px] font-light text-white -tracking-[0.96px] leading-tight">
+          <h2 className="mt-3 text-[32px] font-semibold leading-tight text-white md:text-[44px]">
             Empieza a vender hoy con SWP
           </h2>
-          <p className="mt-4 text-md font-light text-white/65 max-w-[480px] mx-auto">
+          <p className="mt-3 max-w-[560px] text-md font-light text-white/65">
             Únete a miles de empresas que ya crecen con nuestra plataforma.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-6 flex flex-wrap items-center gap-4 md:mt-0">
             <Button variant="dark" size="lg" asChild>
               <Link href="/socios/registro">
               Solicitar acceso
@@ -27,7 +24,6 @@ export default function CTA() {
               <a href="mailto:ventas@swp.finance">Hablar con ventas</a>
             </Button>
           </div>
-        </div>
       </div>
     </section>
   );

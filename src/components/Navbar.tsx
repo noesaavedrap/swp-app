@@ -68,9 +68,9 @@ export default function Navbar() {
       <nav
         className={`fixed top-12 left-1/2 z-50 w-[calc(100%-32px)] -translate-x-1/2 md:top-14 lg:top-16 max-w-[76rem] xl:w-full transition-all duration-300 ${scrolled ? "" : ""}`}
       >
-        <div className="rounded-xl md:rounded-2xl border border-white/10 bg-[#0d1016]/80 px-6 py-3 shadow-[0_18px_40px_rgba(0,0,0,0.25)] backdrop-blur-xl flex items-center justify-between">
+        <div className="rounded-lg border border-white/10 bg-[#0d1016] px-4 py-3 flex items-center justify-between md:px-6">
           <a href="/" className="flex items-center gap-2 shrink-0">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-brand to-brand-light shadow-[0_0_24px_rgba(212,255,0,0.3)]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-brand">
               <Zap className="size-5 text-[#0a0b10]" strokeWidth={2.5} />
             </div>
             <div className="flex flex-col leading-none">
@@ -127,7 +127,7 @@ export default function Navbar() {
         </div>
 
         {mobileOpen && (
-          <div className="mt-2 flex flex-col gap-4 rounded-xl border border-white/10 bg-[#0d1016]/90 px-6 py-5 shadow-[0_18px_40px_rgba(0,0,0,0.25)] backdrop-blur-xl lg:hidden animate-in fade-in slide-in-from-top-2 duration-200 fill-mode-both">
+          <div className="mt-2 flex flex-col gap-4 rounded-lg border border-white/10 bg-[#0d1016] px-6 py-5 lg:hidden animate-in fade-in slide-in-from-top-2 duration-200 fill-mode-both">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -169,7 +169,7 @@ function MarketSwitcher({ market, onChange, mobile = false }: { market: MarketCo
   const selectedMarket = markets.find((item) => item.code === market) ?? markets[0]
 
   return (
-    <label className={`relative flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-2.5 py-2 text-xs text-white/75 backdrop-blur-sm ${mobile ? "w-full" : ""}`}>
+    <label className={`relative flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-2 text-xs text-white/75 ${mobile ? "w-full" : ""}`}>
       <Globe2 className="size-3.5 shrink-0 text-brand" aria-hidden="true" />
       <span className="text-base leading-none" aria-hidden="true">{selectedMarket.flag}</span>
       <span className="sr-only">País de operación</span>
