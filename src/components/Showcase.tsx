@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, ArrowRight, CreditCard, Store } from "lucide-react";
+import { CheckCircle2, ArrowRight, CreditCard, ShoppingBag, Store } from "lucide-react";
 
 const rows = [
   {
