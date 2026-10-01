@@ -226,9 +226,9 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
   return (
     <div className="min-h-screen bg-[#070b11] px-4 py-8 text-white">
       <div className="mx-auto max-w-[1280px]">
-        <header className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.26)] backdrop-blur-xl md:flex-row md:items-center md:justify-between">
+        <header className="flex flex-col gap-4 rounded-lg border border-white/10 bg-[#0d1218] p-5 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand to-brand-light shadow-[0_0_24px_rgba(212,255,0,0.25)]">
+            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-brand">
               <Zap className="size-5 text-[#071019]" strokeWidth={2.6} />
             </div>
             <div>
@@ -253,7 +253,7 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {dashboardStats.map(({ label, value, delta, tone, icon: Icon }) => (
-            <div key={label} className="rounded-3xl border border-white/10 bg-[#0d1218] p-5 shadow-[0_18px_44px_rgba(0,0,0,0.18)]">
+            <div key={label} className="rounded-lg border border-white/10 bg-[#0d1218] p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/45">{label}</p>
@@ -272,7 +272,7 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
         </div>
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1.45fr_0.55fr]">
-          <section className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+          <section className="rounded-lg border border-white/10 bg-[#0d1218] p-5">
             <div className="flex items-center justify-between gap-4 pb-5">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Rendimiento</p>
@@ -284,11 +284,11 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
               </div>
             </div>
 
-            <div className="mt-6 flex h-52 items-end gap-2 rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-transparent p-4">
+            <div className="mt-6 flex h-52 items-end gap-2 rounded-md border border-white/10 bg-[#0a0e13] p-4">
               {chartBars.map((height, index) => (
                 <div key={index} className="flex flex-1 flex-col items-center justify-end gap-2">
                   <span
-                    className={`w-full rounded-t-xl ${index % 2 === 0 ? "bg-gradient-to-t from-brand/80 to-brand-light" : "bg-gradient-to-t from-[#1e293b] to-[#334155]"}`}
+                    className={`w-full rounded-t-sm ${index % 2 === 0 ? "bg-brand" : "bg-[#3b4b5d]"}`}
                     style={{ height: `${height}%` }}
                   />
                   <span className="text-[9px] text-white/35">{["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"][index]}</span>
@@ -298,7 +298,7 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
           </section>
 
           <aside className="space-y-6">
-            <div className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+            <div className="rounded-lg border border-white/10 bg-[#0d1218] p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Resumen</p>
@@ -310,18 +310,18 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
               </div>
 
               <div className="mt-5 space-y-3">
-                <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3">
+                <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/[0.02] px-3 py-3">
                   <span className="text-sm text-white/65">Cobros completados</span>
                   <span className="text-sm font-semibold text-white">{completadas}</span>
                 </div>
-                <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3">
+                <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/[0.02] px-3 py-3">
                   <span className="text-sm text-white/65">Estado de riesgo</span>
                   <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-300">Bajo</span>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+            <div className="rounded-lg border border-white/10 bg-[#0d1218] p-5">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Acciones</p>
@@ -333,11 +333,11 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
               </div>
 
               <div className="mt-5 space-y-3">
-                <button type="button" onClick={() => setShowForm(true)} className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3 text-left text-sm text-white hover:bg-white/[0.04]">
+                <button type="button" onClick={() => setShowForm(true)} className="flex w-full items-center justify-between rounded-md border border-white/10 bg-white/[0.02] px-3 py-3 text-left text-sm text-white hover:bg-white/[0.04]">
                   <span>Nueva transacción</span>
                   <ChevronRight className="size-4 text-white/60" />
                 </button>
-                <button type="button" className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3 text-left text-sm text-white hover:bg-white/[0.04]">
+                <button type="button" className="flex w-full items-center justify-between rounded-md border border-white/10 bg-white/[0.02] px-3 py-3 text-left text-sm text-white hover:bg-white/[0.04]">
                   <span>Ver facturación</span>
                   <ChevronRight className="size-4 text-white/60" />
                 </button>
@@ -347,7 +347,7 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
         </div>
 
         <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1fr]">
-          <div className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+          <div className="rounded-lg border border-white/10 bg-[#0d1218] p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Actividad</p>
@@ -363,7 +363,7 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
                 <p className="text-sm text-white/55">Aún no hay eventos registrados.</p>
               ) : (
                 activityEvents.slice(0, 4).map((event, index) => (
-                  <div key={`${event.type}-${event.createdAt}-${index}`} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3">
+                  <div key={`${event.type}-${event.createdAt}-${index}`} className="flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.02] px-3 py-3">
                     <span className="size-2.5 rounded-full bg-brand" />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">
@@ -377,7 +377,7 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
             </div>
           </div>
 
-          <div className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+          <div className="rounded-lg border border-white/10 bg-[#0d1218] p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Infraestructura</p>
@@ -401,7 +401,7 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
           </div>
         </div>
 
-        <div className="mt-6 rounded-[30px] border border-white/10 bg-[#0d1218] shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+        <div className="mt-6 rounded-lg border border-white/10 bg-[#0d1218]">
           <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Movimientos</p>
