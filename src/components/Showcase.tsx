@@ -19,6 +19,14 @@ const rows = [
     cta: "Conoce SWP Store",
     mockup: "store",
   },
+  {
+    title: "Tu tienda Shopify, lista para vender",
+    description:
+      "Diseñamos y configuramos tu web en Shopify con catálogo, pagos y envíos para que puedas enfocarte en hacer crecer tu negocio.",
+    cta: "Quiero mi tienda Shopify",
+    mockup: "shopify",
+    href: "mailto:ventas@swp.finance?subject=Quiero%20mi%20tienda%20Shopify",
+  },
 ];
 
 function PayMockup() {
@@ -80,6 +88,36 @@ function StoreMockup() {
   );
 }
 
+function ShopifyMockup() {
+  return (
+    <div className="w-full max-w-sm overflow-hidden rounded-xl border border-white/10 bg-[#f8f7f3] text-[#18231f] shadow-[0_20px_55px_rgba(0,0,0,0.25)]">
+      <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em]">Tu marca</span>
+        <span className="text-[10px] text-black/55">Tienda online</span>
+        <Store className="size-4" />
+      </div>
+      <div className="px-5 py-6">
+        <p className="text-[9px] font-medium uppercase tracking-[0.18em] text-emerald-800">Nueva colección</p>
+        <p className="mt-2 max-w-[220px] text-xl font-medium leading-tight">Hecho para acompañarte</p>
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          {[
+            { name: "Producto destacado", color: "bg-[#dce5d9]" },
+            { name: "Favorito de temporada", color: "bg-[#eadccf]" },
+          ].map((product) => (
+            <div key={product.name}>
+              <div className={`flex aspect-[4/3] items-center justify-center rounded-md ${product.color}`}>
+                <ShoppingBag className="size-6 text-black/35" />
+              </div>
+              <p className="mt-2 text-[9px]">{product.name}</p>
+              <p className="mt-1 text-[9px] font-medium">S/ 129.00</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Showcase() {
   return (
     <section className="swp-section py-10 md:py-14 lg:py-28">
@@ -113,15 +151,34 @@ export default function Showcase() {
                 <p className="mt-4 font-light leading-relaxed text-white/70">
                   {row.description}
                 </p>
-                <Button variant="secondary" className="mt-8 gap-2 border-white/10 bg-white/5 text-white hover:bg-white/10">
-                  {row.cta}
-                  <ArrowRight className="size-4" />
+                <Button
+                  variant="secondary"
+                  className="mt-8 gap-2 border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  asChild={Boolean(row.href)}
+                >
+                  {row.href ? (
+                    <a href={row.href}>
+                      {row.cta}
+                      <ArrowRight className="size-4" />
+                    </a>
+                  ) : (
+                    <>
+                      {row.cta}
+                      <ArrowRight className="size-4" />
+                    </>
+                  )}
                 </Button>
               </div>
 
               <div className="flex w-full flex-1 justify-center">
                 <div className="flex w-full max-w-md items-center justify-center rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(212,255,0,0.08)_0%,rgba(14,17,23,0.95)_100%)] p-8">
-                  {row.mockup === "pay" ? <PayMockup /> : <StoreMockup />}
+                  {row.mockup === "pay" ? (
+                    <PayMockup />
+                  ) : row.mockup === "shopify" ? (
+                    <ShopifyMockup />
+                  ) : (
+                    <StoreMockup />
+                  )}
                 </div>
               </div>
             </motion.div>

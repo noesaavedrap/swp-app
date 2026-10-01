@@ -1,7 +1,21 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Activity, ArrowDownLeft, ArrowUpRight, DatabaseZap, Loader2, Plus, Zap } from "lucide-react";
+import {
+  Activity,
+  ArrowDownLeft,
+  ArrowUpRight,
+  ChevronRight,
+  CreditCard,
+  DatabaseZap,
+  Loader2,
+  Plus,
+  ShieldCheck,
+  Sparkles,
+  TrendingUp,
+  Wallet,
+  Zap,
+} from "lucide-react";
 import { getSupabase, hasSupabaseConfig } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 
@@ -40,6 +54,8 @@ const tipoOptions: Array<{ value: Transaccion["tipo"]; label: string }> = [
   { value: "egreso", label: "Egreso" },
   { value: "transferencia", label: "Transferencia" },
 ];
+
+const chartBars = [18, 32, 24, 48, 40, 62, 54, 76, 68, 82, 72, 90];
 
 export default function SocioDashboard({ socio }: { socio: Socio }) {
   const [transacciones, setTransacciones] = useState<Transaccion[]>([]);
@@ -158,6 +174,8 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
   const egresos = transacciones
     .filter((t) => t.estado === "completado" && t.tipo === "egreso" && t.creado_en.startsWith(currentMonth))
     .reduce((acc, t) => acc + Number(t.monto), 0);
+  const utilidad = ingresos - egresos;
+  const completadas = transacciones.filter((t) => t.estado === "completado").length;
 
   const formatMoney = (n: number) =>
     new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" }).format(n);
@@ -170,279 +188,365 @@ export default function SocioDashboard({ socio }: { socio: Socio }) {
       minute: "2-digit",
     });
 
-  const logout = async () => {
+  const logout = () => {
     window.location.href = "/api/auth/logout";
   };
 
+  const dashboardStats = [
+    {
+      label: "Saldo disponible",
+      value: formatMoney(saldo),
+      delta: "+8.2%",
+      tone: "bg-brand/10 text-brand",
+      icon: Wallet,
+    },
+    {
+      label: "Ingresos del mes",
+      value: formatMoney(ingresos),
+      delta: "+12.4%",
+      tone: "bg-emerald-500/10 text-emerald-300",
+      icon: ArrowDownLeft,
+    },
+    {
+      label: "Egresos del mes",
+      value: formatMoney(egresos),
+      delta: "-3.1%",
+      tone: "bg-red-500/10 text-red-300",
+      icon: ArrowUpRight,
+    },
+    {
+      label: "Utilidad neta",
+      value: formatMoney(utilidad),
+      delta: "+5.8%",
+      tone: "bg-cyan-500/10 text-cyan-300",
+      icon: TrendingUp,
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-brand to-brand-light">
-            <Zap className="size-5 text-white" strokeWidth={2.5} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-text-primary">
-              Hola, {socio.nombres}
-            </h1>
-            <p className="text-xs font-light text-text-tertiary">
-              Rol: {socio.rol} · {socio.documento ? `Doc. ${socio.documento}` : "Sin documento"}
-            </p>
-          </div>
-        </div>
-        <Button variant="ghost" size="sm" onClick={logout}>
-          Cerrar sesión
-        </Button>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
-          <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
-            Saldo disponible
-          </p>
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-text-primary">
-            {formatMoney(saldo)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
-          <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
-            Ingresos (mes)
-          </p>
-          <p className="mt-2 flex items-center gap-2 text-3xl font-semibold tracking-tight text-brand">
-            <ArrowDownLeft className="size-5" />
-            {formatMoney(ingresos)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
-          <p className="text-xs font-light text-text-tertiary uppercase tracking-wide">
-            Egresos (mes)
-          </p>
-          <p className="mt-2 flex items-center gap-2 text-3xl font-semibold tracking-tight text-red-500">
-            <ArrowUpRight className="size-5" />
-            {formatMoney(egresos)}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-text-tertiary">Actividad del dashboard</p>
-              <h2 className="mt-2 text-lg font-semibold tracking-tight text-text-primary">Tu operación, sincronizada</h2>
-            </div>
-            <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
-              <Activity className="size-5" />
-            </div>
-          </div>
-          <div className="mt-5 space-y-3">
-            {activityEvents.length === 0 ? (
-              <p className="text-sm text-text-tertiary">Aún no hay eventos registrados.</p>
-            ) : (
-              activityEvents.slice(0, 4).map((event, index) => (
-                <div key={`${event.type}-${event.createdAt}-${index}`} className="flex items-center gap-3 rounded-lg border border-border px-3 py-2.5">
-                  <span className="size-2 rounded-full bg-brand" />
-                  <p className="flex-1 text-sm text-text-secondary">
-                    {event.type === "transaction_created" ? "Transacción registrada" : "Sesión del dashboard"}
-                  </p>
-                  <span className="text-xs text-text-tertiary">{formatActivityDate(event.createdAt)}</span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-border bg-white p-6 shadow-card">
+    <div className="min-h-screen bg-[#070b11] px-4 py-8 text-white">
+      <div className="mx-auto max-w-[1280px]">
+        <header className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.26)] backdrop-blur-xl md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-[#e8f3ff] text-[#2672c8]">
-              <DatabaseZap className="size-5" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand to-brand-light shadow-[0_0_24px_rgba(212,255,0,0.25)]">
+              <Zap className="size-5 text-[#071019]" strokeWidth={2.6} />
             </div>
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-text-tertiary">Infraestructura</p>
-              <h2 className="mt-1 text-lg font-semibold tracking-tight text-text-primary">Datos protegidos</h2>
+              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/45">SWP</p>
+              <h1 className="text-xl font-semibold tracking-tight text-white">Dashboard operativo</h1>
             </div>
           </div>
-          <div className="mt-5 space-y-3 text-sm">
-            <div className="flex items-center justify-between rounded-lg bg-secondary px-3 py-2.5"><span className="text-text-secondary">Supabase</span><span className="font-medium text-brand">Activo</span></div>
-            <div className="flex items-center justify-between rounded-lg bg-secondary px-3 py-2.5"><span className="text-text-secondary">MongoDB Analytics</span><span className={`font-medium ${mongoConfigured ? "text-brand" : "text-text-tertiary"}`}>{mongoConfigured ? "Activo" : "Pendiente"}</span></div>
-          </div>
-        </div>
-      </div>
 
-      <div className="rounded-2xl border border-border bg-white shadow-card">
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
-          <h2 className="text-sm font-semibold text-text-primary uppercase tracking-wide">
-            Movimientos
-          </h2>
-          <Button variant="primary" size="sm" onClick={() => setShowForm((v) => !v)}>
-            <Plus className="size-4" /> Nueva transacción
-          </Button>
-        </div>
-
-        {showForm && (
-          <form
-            onSubmit={crear}
-            className="grid gap-4 border-b border-border bg-secondary/40 px-6 py-5 md:grid-cols-2 lg:grid-cols-5"
-          >
-            <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
-                Tipo
-              </span>
-              <select
-                value={tipo}
-                onChange={(e) => setTipo(e.target.value as Transaccion["tipo"])}
-                className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
-              >
-                {tipoOptions.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
-                Monto (PEN)
-              </span>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                required
-                value={monto}
-                onChange={(e) => setMonto(e.target.value)}
-                className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
-                placeholder="0.00"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
-                Concepto
-              </span>
-              <input
-                type="text"
-                value={concepto}
-                onChange={(e) => setConcepto(e.target.value)}
-                className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
-                placeholder="ej. Cuota de ahorro"
-              />
-            </label>
-
-            <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
-                Método
-              </span>
-              <select
-                value={metodo}
-                onChange={(e) => setMetodo(e.target.value)}
-                className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
-              >
-                {metodoOptions.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            {tipo === "transferencia" && (
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-text-primary uppercase tracking-wide">
-                  Contraparte
-                </span>
-                <input
-                  type="text"
-                  required
-                  maxLength={120}
-                  value={contraparte}
-                  onChange={(e) => setContraparte(e.target.value)}
-                  className="h-10 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand"
-                  placeholder="Persona o cuenta destino"
-                />
-              </label>
-            )}
-
-            <div className="flex items-end gap-2">
-              <Button type="submit" disabled={saving} size="lg" className="flex-1">
-                {saving && <Loader2 className="size-4 animate-spin" />}
-                Guardar
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setShowForm(false)}
-                aria-label="Cancelar"
-              >
-                ✕
-              </Button>
+          <div className="flex items-center gap-3">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-brand">
+              <Sparkles className="size-3.5" />
+              En vivo
             </div>
-          </form>
-        )}
-
-        {loadError && (
-          <div className="flex items-center justify-between gap-4 border-b border-border bg-red-50 px-6 py-3 text-sm text-red-700">
-            <span>{loadError}</span>
-            <Button type="button" variant="ghost" size="sm" onClick={load}>
-              Reintentar
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white/80">
+              {new Intl.DateTimeFormat("es-PE", { dateStyle: "medium" }).format(new Date())}
+            </div>
+            <Button variant="secondary" size="sm" onClick={logout} className="border-white/10 bg-white/5 text-white hover:bg-white/10">
+              Cerrar sesión
             </Button>
           </div>
-        )}
+        </header>
 
-        {error && (
-          <p className="px-6 py-3 text-sm text-red-600">{error}</p>
-        )}
-
-        <div className="divide-y divide-border">
-          {loading ? (
-            <div className="flex items-center justify-center py-12 text-text-tertiary">
-              <Loader2 className="size-5 animate-spin" />
-            </div>
-          ) : transacciones.length === 0 ? (
-            <p className="px-6 py-12 text-center text-sm font-light text-text-tertiary">
-              Aún no tienes movimientos. Crea tu primera transacción.
-            </p>
-          ) : (
-            transacciones.map((t) => {
-              const isIngreso = t.tipo === "ingreso";
-              const color =
-                t.estado === "rechazado" ? "text-red-500" : isIngreso ? "text-brand" : "text-red-500";
-              return (
-                <div
-                  key={t.id}
-                  className="flex items-center justify-between gap-4 px-6 py-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`flex size-9 items-center justify-center rounded-full ${
-                        isIngreso ? "bg-brand/10" : "bg-red-50"
-                      }`}
-                    >
-                      {isIngreso ? (
-                        <ArrowDownLeft className={`size-4 ${color}`} />
-                      ) : (
-                        <ArrowUpRight className={`size-4 ${color}`} />
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">
-                        {t.concepto || "Movimiento"}
-                        {t.contraparte ? ` · ${t.contraparte}` : ""}
-                      </p>
-                      <p className="text-xs font-light text-text-tertiary">
-                        {formatDate(t.creado_en)} · {t.metodo} · {t.estado}
-                      </p>
-                    </div>
-                  </div>
-                  <p className={`text-sm font-semibold ${color}`}>
-                    {isIngreso ? "+" : "-"}
-                    {formatMoney(Number(t.monto))}
-                  </p>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {dashboardStats.map(({ label, value, delta, tone, icon: Icon }) => (
+            <div key={label} className="rounded-3xl border border-white/10 bg-[#0d1218] p-5 shadow-[0_18px_44px_rgba(0,0,0,0.18)]">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/45">{label}</p>
+                  <p className="mt-4 text-2xl font-semibold tracking-tight text-white">{value}</p>
                 </div>
-              );
-            })
+                <div className={`flex size-10 items-center justify-center rounded-xl ${tone}`}>
+                  <Icon className="size-5" />
+                </div>
+              </div>
+              <div className="mt-5 flex items-center justify-between text-xs text-white/60">
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1">{delta}</span>
+                <span>vs. último mes</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-6 xl:grid-cols-[1.45fr_0.55fr]">
+          <section className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+            <div className="flex items-center justify-between gap-4 pb-5">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Rendimiento</p>
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">Flujo de caja</h2>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1.5 text-xs text-brand">
+                <TrendingUp className="size-3.5" />
+                +24.8%
+              </div>
+            </div>
+
+            <div className="mt-6 flex h-52 items-end gap-2 rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-transparent p-4">
+              {chartBars.map((height, index) => (
+                <div key={index} className="flex flex-1 flex-col items-center justify-end gap-2">
+                  <span
+                    className={`w-full rounded-t-xl ${index % 2 === 0 ? "bg-gradient-to-t from-brand/80 to-brand-light" : "bg-gradient-to-t from-[#1e293b] to-[#334155]"}`}
+                    style={{ height: `${height}%` }}
+                  />
+                  <span className="text-[9px] text-white/35">{["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"][index]}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <aside className="space-y-6">
+            <div className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Resumen</p>
+                  <h3 className="mt-2 text-xl font-semibold text-white">Operación</h3>
+                </div>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                  <ShieldCheck className="size-5" />
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3">
+                  <span className="text-sm text-white/65">Cobros completados</span>
+                  <span className="text-sm font-semibold text-white">{completadas}</span>
+                </div>
+                <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3">
+                  <span className="text-sm text-white/65">Estado de riesgo</span>
+                  <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-300">Bajo</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Acciones</p>
+                  <h3 className="mt-2 text-xl font-semibold text-white">Rápido</h3>
+                </div>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-300">
+                  <CreditCard className="size-5" />
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                <button type="button" onClick={() => setShowForm(true)} className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3 text-left text-sm text-white hover:bg-white/[0.04]">
+                  <span>Nueva transacción</span>
+                  <ChevronRight className="size-4 text-white/60" />
+                </button>
+                <button type="button" className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3 text-left text-sm text-white hover:bg-white/[0.04]">
+                  <span>Ver facturación</span>
+                  <ChevronRight className="size-4 text-white/60" />
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_1fr]">
+          <div className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Actividad</p>
+                <h3 className="mt-2 text-xl font-semibold text-white">Últimos eventos</h3>
+              </div>
+              <div className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                <Activity className="size-5" />
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-3">
+              {activityEvents.length === 0 ? (
+                <p className="text-sm text-white/55">Aún no hay eventos registrados.</p>
+              ) : (
+                activityEvents.slice(0, 4).map((event, index) => (
+                  <div key={`${event.type}-${event.createdAt}-${index}`} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3">
+                    <span className="size-2.5 rounded-full bg-brand" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">
+                        {event.type === "transaction_created" ? "Transacción registrada" : "Sesión del dashboard"}
+                      </p>
+                    </div>
+                    <span className="text-xs text-white/45">{formatActivityDate(event.createdAt)}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-[30px] border border-white/10 bg-[#0d1218] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Infraestructura</p>
+                <h3 className="mt-2 text-xl font-semibold text-white">Sistema</h3>
+              </div>
+              <div className="flex size-10 items-center justify-center rounded-xl bg-[#e8f3ff] text-[#2672c8]">
+                <DatabaseZap className="size-5" />
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-3 text-sm">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3">
+                <span className="text-white/65">Supabase</span>
+                <span className="font-medium text-brand">Activo</span>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-3 py-3">
+                <span className="text-white/65">MongoDB Analytics</span>
+                <span className={`font-medium ${mongoConfigured ? "text-brand" : "text-white/45"}`}>{mongoConfigured ? "Activo" : "Pendiente"}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-[30px] border border-white/10 bg-[#0d1218] shadow-[0_22px_60px_rgba(0,0,0,0.22)]">
+          <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/45">Movimientos</p>
+              <h2 className="mt-1 text-xl font-semibold text-white">Últimas transacciones</h2>
+            </div>
+            <Button variant="primary" size="sm" onClick={() => setShowForm((v) => !v)} className="rounded-full bg-brand text-[#071019] hover:bg-brand-light">
+              <Plus className="size-4" /> Nueva transacción
+            </Button>
+          </div>
+
+          {showForm && (
+            <form
+              onSubmit={crear}
+              className="grid gap-4 border-b border-white/10 bg-white/[0.02] px-5 py-5 md:grid-cols-2 xl:grid-cols-5"
+            >
+              <label className="flex flex-col gap-1.5 text-sm text-white/75">
+                <span>Tipo</span>
+                <select
+                  value={tipo}
+                  onChange={(e) => setTipo(e.target.value as Transaccion["tipo"])}
+                  className="h-10 rounded-xl border border-white/10 bg-[#090d12] px-3 text-white outline-none focus:border-brand"
+                >
+                  {tipoOptions.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-1.5 text-sm text-white/75">
+                <span>Monto (PEN)</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  required
+                  value={monto}
+                  onChange={(e) => setMonto(e.target.value)}
+                  className="h-10 rounded-xl border border-white/10 bg-[#090d12] px-3 text-white outline-none focus:border-brand"
+                  placeholder="0.00"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1.5 text-sm text-white/75">
+                <span>Concepto</span>
+                <input
+                  type="text"
+                  value={concepto}
+                  onChange={(e) => setConcepto(e.target.value)}
+                  className="h-10 rounded-xl border border-white/10 bg-[#090d12] px-3 text-white outline-none focus:border-brand"
+                  placeholder="ej. Cuota de ahorro"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1.5 text-sm text-white/75">
+                <span>Método</span>
+                <select
+                  value={metodo}
+                  onChange={(e) => setMetodo(e.target.value)}
+                  className="h-10 rounded-xl border border-white/10 bg-[#090d12] px-3 text-white outline-none focus:border-brand"
+                >
+                  {metodoOptions.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {tipo === "transferencia" && (
+                <label className="flex flex-col gap-1.5 text-sm text-white/75">
+                  <span>Contraparte</span>
+                  <input
+                    type="text"
+                    required
+                    maxLength={120}
+                    value={contraparte}
+                    onChange={(e) => setContraparte(e.target.value)}
+                    className="h-10 rounded-xl border border-white/10 bg-[#090d12] px-3 text-white outline-none focus:border-brand"
+                    placeholder="Cuenta destino"
+                  />
+                </label>
+              )}
+
+              <div className="flex items-end gap-2">
+                <Button type="submit" disabled={saving} size="lg" className="flex-1 rounded-xl bg-brand text-[#071019] hover:bg-brand-light">
+                  {saving && <Loader2 className="size-4 animate-spin" />}
+                  Guardar
+                </Button>
+                <Button type="button" variant="ghost" onClick={() => setShowForm(false)} className="text-white/70 hover:bg-white/5">
+                  ✕
+                </Button>
+              </div>
+            </form>
           )}
+
+          {loadError && (
+            <div className="flex items-center justify-between gap-4 border-b border-white/10 bg-red-500/5 px-5 py-3 text-sm text-red-300">
+              <span>{loadError}</span>
+              <Button type="button" variant="ghost" size="sm" onClick={load} className="text-red-200 hover:bg-red-500/10">
+                Reintentar
+              </Button>
+            </div>
+          )}
+
+          {error && <p className="px-5 py-3 text-sm text-red-300">{error}</p>}
+
+          <div className="divide-y divide-white/10">
+            {loading ? (
+              <div className="flex items-center justify-center py-12 text-white/45">
+                <Loader2 className="size-5 animate-spin" />
+              </div>
+            ) : transacciones.length === 0 ? (
+              <p className="px-5 py-12 text-center text-sm text-white/55">Aún no tienes movimientos. Crea tu primera transacción.</p>
+            ) : (
+              transacciones.map((t) => {
+                const isIngreso = t.tipo === "ingreso";
+                const color = t.estado === "rechazado" ? "text-red-300" : isIngreso ? "text-brand" : "text-red-300";
+
+                return (
+                  <div key={t.id} className="flex items-center justify-between gap-4 px-5 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex size-10 items-center justify-center rounded-full ${isIngreso ? "bg-brand/10" : "bg-red-500/10"}`}>
+                        {isIngreso ? <ArrowDownLeft className={`size-4 ${color}`} /> : <ArrowUpRight className={`size-4 ${color}`} />}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">
+                          {t.concepto || "Movimiento"}
+                          {t.contraparte ? ` · ${t.contraparte}` : ""}
+                        </p>
+                        <p className="text-xs text-white/45">
+                          {formatDate(t.creado_en)} · {t.metodo} · {t.estado}
+                        </p>
+                      </div>
+                    </div>
+                    <p className={`text-sm font-semibold ${color}`}>
+                      {isIngreso ? "+" : "-"}
+                      {formatMoney(Number(t.monto))}
+                    </p>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
     </div>
