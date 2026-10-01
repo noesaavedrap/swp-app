@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Globe2, Menu, Zap, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -24,16 +26,28 @@ const markets = [
 type MarketCode = (typeof markets)[number]["code"]
 
 export default function Navbar() {
+  const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
   const [user, setUser] = useState<string | null>(null)
   const [profileLoading, setProfileLoading] = useState(true)
   const [market, setMarket] = useState<MarketCode>("PE")
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
+    const onScroll = () => {
+      setScrolled(window.scrollY > 10)
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight
+      setScrollProgress(scrollableHeight > 0 ? window.scrollY / scrollableHeight : 0)
+    }
+
     window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+    window.addEventListener("resize", onScroll)
+    onScroll()
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      window.removeEventListener("resize", onScroll)
+    }
   }, [])
 
   useEffect(() => {
@@ -66,10 +80,10 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-12 left-1/2 z-50 w-[calc(100%-32px)] -translate-x-1/2 md:top-14 lg:top-16 max-w-[76rem] xl:w-full transition-all duration-300 ${scrolled ? "" : ""}`}
+        className="fixed top-12 left-1/2 z-50 w-[calc(100%-32px)] -translate-x-1/2 md:top-14 lg:top-16 max-w-[76rem] xl:w-full"
       >
-        <div className="rounded-lg border border-white/10 bg-[#0d1016] px-4 py-3 flex items-center justify-between md:px-6">
-          <a href="/" className="flex items-center gap-2 shrink-0">
+        <div className={`flex items-center justify-between rounded-lg border border-white/10 bg-[#0d1016] px-4 md:px-6 transition-[padding,background-color] duration-200 ${scrolled ? "py-2" : "py-3"}`}>
+          <Link href="/" className="flex items-center gap-2 shrink-0">
             <div className="flex h-9 w-9 items-center justify-center rounded-md bg-brand">
               <Zap className="size-5 text-[#0a0b10]" strokeWidth={2.5} />
             </div>
@@ -77,17 +91,18 @@ export default function Navbar() {
               <span className="text-sm font-semibold text-white tracking-tight">SWP</span>
               <span className="text-[10px] font-light text-text-tertiary tracking-[0.22em] uppercase">Finance</span>
             </div>
-          </a>
+          </Link>
 
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-light text-text-secondary transition-colors hover:text-white"
+                aria-current={pathname === link.href || (link.href !== "/" && pathname.startsWith(`${link.href}/`)) ? "page" : undefined}
+                className={`relative whitespace-nowrap py-2 text-xs font-medium transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-px after:origin-left after:transition-transform ${pathname === link.href || (link.href !== "/" && pathname.startsWith(`${link.href}/`)) ? "text-white after:scale-x-100 after:bg-brand" : "text-text-secondary after:scale-x-0 after:bg-transparent hover:text-white"}`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -129,14 +144,15 @@ export default function Navbar() {
         {mobileOpen && (
           <div className="mt-2 flex flex-col gap-4 rounded-lg border border-white/10 bg-[#0d1016] px-6 py-5 lg:hidden animate-in fade-in slide-in-from-top-2 duration-200 fill-mode-both">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-sm font-light text-text-secondary transition-colors hover:text-white"
+                aria-current={pathname === link.href || (link.href !== "/" && pathname.startsWith(`${link.href}/`)) ? "page" : undefined}
+                className={`border-l-2 py-1 pl-3 text-sm transition-colors ${pathname === link.href || (link.href !== "/" && pathname.startsWith(`${link.href}/`)) ? "border-brand text-white" : "border-transparent text-text-secondary hover:text-white"}`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <MarketSwitcher market={market} onChange={handleMarketChange} mobile />
             <hr className="border-white/10" />
@@ -160,6 +176,19 @@ export default function Navbar() {
             )}
           </div>
         )}
+        <div
+          className="absolute inset-x-0 -bottom-px h-px bg-white/10"
+          role="progressbar"
+          aria-label="Progreso de lectura"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(scrollProgress * 100)}
+        >
+          <span
+            className="block h-full origin-left bg-brand transition-transform duration-100"
+            style={{ transform: `scaleX(${scrollProgress})` }}
+          />
+        </div>
       </nav>
     </>
   )
