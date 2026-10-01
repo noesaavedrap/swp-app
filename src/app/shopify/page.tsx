@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, Check, CreditCard, PackageOpen, Palette, ShoppingBag, Sparkles } from "lucide-react";
+import { ArrowRight, CreditCard, PackageOpen, Palette, ShoppingBag, Sparkles } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ export default function ShopifyPage() {
   return (
     <main className="min-h-screen overflow-x-clip bg-[#f8faf6] text-[#173326]">
       <Navbar />
-      <section className="bg-[#edf5e8] px-4 pb-8 pt-28 md:pb-16 md:pt-40 xl:px-0">
+      <section className="bg-[#edf5e8] bg-[linear-gradient(to_right,rgba(23,51,38,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(23,51,38,0.035)_1px,transparent_1px)] bg-[size:32px_32px] px-4 pb-8 pt-28 md:pb-16 md:pt-40 xl:px-0">
         <div className="mx-auto grid max-w-[76rem] items-center gap-6 md:gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div className="max-w-xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#bfd6c3] bg-white/70 px-3 py-1.5 text-[11px] font-medium text-[#225a3c] md:text-xs">
@@ -85,12 +85,12 @@ export default function ShopifyPage() {
           </div>
 
           <div className="mx-auto w-full max-w-[620px]">
-            <div className="overflow-hidden rounded-lg border border-[#d7e1d5] bg-white shadow-[0_24px_60px_rgba(25,65,43,0.13)]">
-              <div className="hidden h-10 items-center gap-1.5 border-b border-[#e7ece5] px-4 sm:flex">
-                <span className="size-2 rounded-full bg-[#d8e1d7]" />
-                <span className="size-2 rounded-full bg-[#d8e1d7]" />
-                <span className="size-2 rounded-full bg-[#d8e1d7]" />
-                <span className="ml-3 rounded-sm bg-[#f2f5f1] px-3 py-1 text-[9px] text-[#87968b]">mitienda.com</span>
+            <div className="overflow-hidden border-y border-[#cbdacb] bg-white">
+              <div className="flex h-9 items-center justify-between border-b border-[#e7ece5] px-3 sm:px-4">
+                <span className="text-[8px] font-semibold uppercase tracking-[0.14em] text-[#526d59]">Vista de tienda</span>
+                <span className="inline-flex items-center gap-1.5 text-[8px] text-[#65766a]">
+                  <span className="size-1.5 rounded-full bg-[#5b9c69]" /> Diseño responsive
+                </span>
               </div>
               <div className="hidden items-center justify-between border-b border-[#edf0eb] px-4 py-3 sm:flex md:px-6">
                 <span className="text-[10px] font-bold tracking-[0.12em] text-[#183b2a] md:text-xs">NORTE / ESTUDIO</span>
